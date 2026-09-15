@@ -40,7 +40,7 @@
       #apcLivePanel.has-buyers .apc-buyer-name{font-size:15px;line-height:1.2;font-weight:900;white-space:normal;overflow-wrap:anywhere}
       #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:11px;line-height:1.15;white-space:normal}
       #apcLivePanel.has-buyers .apc-buyer-status{font-size:13px;font-weight:900;white-space:nowrap;text-align:center}
-      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:12px 14px;flex:0 0 auto}
+      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:16px 18px;flex:0 0 auto}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
       #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
       #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
