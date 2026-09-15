@@ -26,6 +26,12 @@
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
+      #apcLivePanel.has-buyers{width:980px!important;max-width:calc(100vw - 28px)!important}
+      #apcLivePanel.has-buyers .apc-buyer-panel{position:absolute;right:16px;top:150px;width:330px;height:calc(100% - 170px);margin:0;display:block!important}
+      #apcLivePanel.has-buyers .apc-buyer-list{max-height:calc(100% - 38px);overflow:auto}
+      #apcLivePanel.has-buyers .apc-list{width:calc(100% - 360px);max-height:680px}
+      #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 360px)}
+      #apcLivePanel.has-buyers .apc-date{width:calc(100% - 360px)}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
       #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
       #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
@@ -410,6 +416,7 @@ function updatePanel(){
     const p=document.getElementById('apcLivePanel'); if(!p)return;
     const good = state.source==='rr' ? !!state.rrData : state.source==='apc' ? !!state.data : (!!state.data||!!state.rrData);
     p.classList.toggle('offline',!good);
+    p.classList.toggle('has-buyers',state.source==='apc' && !!(state.data&&Array.isArray(state.data.buyers)&&state.data.buyers.length));
     const s=document.getElementById('apcSyncText'); if(s)s.textContent=good?'LIVE':'OFFLINE';
     p.querySelectorAll('.apc-tab').forEach(btn=>btn.classList.toggle('on',btn.dataset.source===state.source));
 
