@@ -1,0 +1,116 @@
+name: Center Leaderboard on Floor Plan Tab
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-floor-plan-mode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch leaderboard focus mode
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('apc-office-sync.js')
+          s = p.read_text(encoding='utf-8')
+          marker = "})();"
+          patch = r'''
+
+  // FLOOR PLAN TAB: switch to a presentation-only leaderboard view.
+  // The floor-plan canvas is hidden and the live leaderboard is centered.
+  function setupFloorPlanFocusMode(){
+    if(window.__apcFloorPlanFocusMode)return;
+    window.__apcFloorPlanFocusMode=true;
+
+    const style=document.createElement('style');
+    style.id='apc-floor-plan-focus-style';
+    style.textContent=`
+      #stage.apc-leaderboard-focus #world,
+      #stage.apc-leaderboard-focus #stageVignette,
+      #stage.apc-leaderboard-focus #tooltip,
+      #stage.apc-leaderboard-focus #infoPanel{display:none!important}
+      #stage.apc-leaderboard-focus #apcLivePanel{
+        left:50%!important;
+        right:auto!important;
+        top:50%!important;
+        bottom:auto!important;
+        transform:translate(-50%,-50%)!important;
+        width:min(820px,calc(100vw - 40px))!important;
+        max-width:calc(100vw - 40px)!important;
+        max-height:calc(100% - 40px)!important;
+      }
+      #stage.apc-leaderboard-focus #apcLivePanel .apc-list{max-height:none!important}
+      #stage.apc-leaderboard-focus #apcLivePanel .apc-name{font-size:20px!important}
+      #stage.apc-leaderboard-focus #apcLivePanel .apc-num{font-size:17px!important}
+      #stage.apc-leaderboard-focus #apcLivePanel .apc-st{font-size:13px!important}
+      #stage.apc-leaderboard-focus #apcLivePanel .apc-rank{font-size:23px!important}
+      #stage.apc-leaderboard-focus #apcLivePanel .apc-row{padding:15px 10px!important}
+    `;
+    document.head.appendChild(style);
+
+    const isFloorPlanTab=el=>{
+      if(!el)return false;
+      const text=(el.textContent||'').trim().replace(/\s+/g,' ').toUpperCase();
+      const label=(el.getAttribute('aria-label')||'').trim().toUpperCase();
+      const key=(el.dataset?.tab||el.dataset?.view||el.id||'').toString().toUpperCase();
+      return text.includes('FLOOR PLAN') || label.includes('FLOOR PLAN') || key.includes('FLOOR-PLAN') || key.includes('FLOOR_PLAN') || key==='FLOORPLAN';
+    };
+
+    const setFocus=enabled=>{
+      const stage=document.getElementById('stage');
+      if(!stage)return;
+      stage.classList.toggle('apc-leaderboard-focus',!!enabled);
+      const panel=document.getElementById('apcLivePanel');
+      if(panel)panel.style.zIndex=enabled?'80':'';
+    };
+
+    document.addEventListener('click',e=>{
+      const tab=e.target?.closest?.('button,[role="tab"],a,[data-tab],[data-view]');
+      if(tab && isFloorPlanTab(tab)){
+        setFocus(true);
+        return;
+      }
+
+      const activePanel=e.target?.closest?.('#apcLivePanel');
+      if(!activePanel){
+        const text=(e.target?.textContent||'').trim().replace(/\s+/g,' ').toUpperCase();
+        if(text==='OFFICE' || text==='MAP' || text==='LIVE OFFICE' || text==='FLOOR') setFocus(false);
+      }
+    },true);
+
+    const observer=new MutationObserver(()=>{
+      document.querySelectorAll('button,[role="tab"],a,[data-tab],[data-view]').forEach(el=>{
+        if(isFloorPlanTab(el)) el.setAttribute('data-apc-floor-plan-hook','1');
+      });
+    });
+    observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['aria-label','id','data-tab','data-view']});
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',setupFloorPlanFocusMode);
+  else setupFloorPlanFocusMode();
+'''
+          if 'FLOOR PLAN TAB: switch to a presentation-only leaderboard view.' not in s:
+              if not s.rstrip().endswith(marker):
+                  raise SystemExit('Expected closing marker not found')
+              s = s.rstrip()[:-len(marker)] + patch + '\n' + marker + '\n'
+              p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes if needed
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apc-office-sync.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Center leaderboard in floor plan presentation mode"
+          git push
