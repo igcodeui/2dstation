@@ -34,10 +34,10 @@
       #apcOfficeSchedule .hd b{font-size:16px;letter-spacing:1.6px;color:#60a5fa}
       #apcOfficeSchedule .body{padding:14px 18px;overflow:auto;max-height:70vh}
       #apcOfficeSchedule .hint{font-size:11px;color:#94a3b8;margin-bottom:12px}
-      #apcOfficeSchedule .display-setting{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:12px 14px;border:1px solid #2f3948;border-radius:9px;background:#0d131b}
+      #apcOfficeSchedule .display-setting{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:16px 18px;border:1px solid #2f3948;border-radius:9px;background:#0d131b}
       #apcOfficeSchedule .display-setting .copy{display:flex;flex-direction:column;gap:4px;text-align:left}
       #apcOfficeSchedule .display-setting .copy b{font-size:12px;color:#fff;letter-spacing:.8px}
-      #apcOfficeSchedule .display-setting .copy span{font-size:10px;color:#94a3b8;line-height:1.35}
+      #apcOfficeSchedule .display-setting .copy span{font-size:12px;color:#94a3b8;line-height:1.35}
       #apcOfficeSchedule .switch{position:relative;width:48px;height:26px;flex:0 0 auto}
       #apcOfficeSchedule .switch input{opacity:0;width:0;height:0}
       #apcOfficeSchedule .slider{position:absolute;inset:0;border-radius:999px;background:#273140;border:1px solid #394455;cursor:pointer;transition:.18s}
