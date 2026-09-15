@@ -27,8 +27,12 @@
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
       #apcLivePanel.has-buyers{width:980px!important;max-width:calc(100vw - 28px)!important}
-      #apcLivePanel.has-buyers .apc-buyer-panel{position:absolute;right:16px;top:150px;width:330px;height:calc(100% - 170px);margin:0;display:block!important}
-      #apcLivePanel.has-buyers .apc-buyer-list{max-height:480px;overflow:auto}
+      #apcLivePanel.has-buyers .apc-buyer-panel{position:absolute;right:16px;top:150px;width:330px;height:auto;max-height:none;margin:0;display:block!important}
+      #apcLivePanel.has-buyers .apc-buyer-list{max-height:none;overflow:visible}
+      #apcLivePanel.has-buyers .apc-buyer-row{padding:5px 8px;font-size:10px;grid-template-columns:1fr 82px 78px;gap:5px}
+      #apcLivePanel.has-buyers .apc-buyer-name{font-size:10px}
+      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:9px}
+      #apcLivePanel.has-buyers .apc-buyer-status{font-size:10px}
       #apcLivePanel.has-buyers .apc-list{width:calc(100% - 360px);max-height:680px}
       #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 360px)}
       #apcLivePanel.has-buyers .apc-date{width:calc(100% - 360px)}
