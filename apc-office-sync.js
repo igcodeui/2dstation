@@ -10,6 +10,7 @@
   const POLL_MS = 30000;
   const NAME_TO_PC = {'marnelie':'PC-1','selyn':'PC-2','edna':'PC-3','angelo':'PC-4','karen':'PC-5','zara':'PC-6','zarah':'PC-6','gia':'PC-7','cherylyn':'PC-8','arc':'PC-10','frank':'PC-11','minjubail':'PC-13','jd':'PC-14','rea':'PC-15','jhoana':'PC-16'};
   const ACTUAL_OFFICE = {'PC-1':'Marnelie','PC-2':'Selyn','PC-3':'Edna','PC-4':'Angelo','PC-5':'Karen','PC-6':'Zarah','PC-7':'Gia','PC-8':'Cherylyn','PC-9':'Red Molina','PC-10':'Arc','PC-11':'Frank','PC-12':null,'PC-13':'Minjubail','PC-14':'JD','PC-15':'Rea','PC-16':'Jhoana','PC-17':null,'PC-18':null,'PC-19':'Carnel','PC-20':'Maika','PC-21':'Shanley','PC-22':'Normie','PC-23':'Angelica'};
+  const GENDER = {'marnelie':'female','selyn':'female','edna':'female','minjubail':'female','karen':'female','zarah':'female','zara':'female','gia':'female','cherylyn':'female','rea':'female','jhoana':'female','shanley':'female','angelica':'female','normie':'female','carnel':'female','maika':'female','angelo':'male','alfredo molina':'male','red molina':'male','frank':'male','arc':'male','jd':'male'};
   const state = {data:null,rrData:null,mapped:[],rrMapped:[],loading:false,timer:null,started:false,badgesVisible:false,source:'apc'};
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pct=v=>(Number(v||0)*100).toFixed(1)+'%';
@@ -87,6 +88,7 @@
 
     mapped.forEach(({office:a,row})=>{
       a.name=String(row.name||a.name);
+      a.gender=GENDER[keyName(a.name)] || a.gender || null;
       a.counted=true;
       a.syncSource=source;
       a.syncStatus=source==='rr'
@@ -170,6 +172,7 @@
     const activate=(list)=>{
       list.forEach(({office:a,row})=>{
         a.name=String(row.name||a.name);
+        a.gender=GENDER[keyName(a.name)] || a.gender || null;
         a.counted=true;
         const rr = a.syncSource==='rr';
         const status = rr
