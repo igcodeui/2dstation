@@ -483,6 +483,6 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
 
   function loop(){positionBadges();refreshBadges();requestAnimationFrame(loop)}
 
-  window.APCOfficeSync={refresh,getData:()=>state.data,getMappings:()=>state.mapped.slice()};
+  window.APCOfficeSync={refresh,getData:()=>state.data,getMappings:()=>state.mapped.slice(),setFloorPlanDisabled};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});else start();
 })();
