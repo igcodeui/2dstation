@@ -1,4 +1,4 @@
-name: Hardworking Mode
+name: Office Sprite Behavior Fix
 
 on:
   push:
@@ -8,41 +8,89 @@ permissions:
   contents: write
 
 jobs:
-  apply-hardworking-mode:
+  repair-office-behavior:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Patch office behavior
+      - name: Restore normal movement and add station safety return
         shell: python
         run: |
           from pathlib import Path
+          import re
+
           p = Path('index.html')
           s = p.read_text(encoding='utf-8')
+          original = s
 
-          marker = "      breakKind: null\n    };"
-          repl = "      breakKind: null,\n      hardworking: true\n    };"
-          if "hardworking: true" not in s:
+          # Remove the temporary hardworking flag from agent creation.
+          s = s.replace("      breakKind: null,\n      hardworking: true\n    };", "      breakKind: null\n    };", 1)
+
+          # Remove the temporary HARDWORKING MODE guard from the regular agent update.
+          hard_agent = re.compile(
+              r"\n    // HARDWORKING MODE: keep every employee at their workstation\.\n"
+              r"    // Breaks, away trips, meetings, stretches, chats and simulated\n"
+              r"    // offline states are disabled for the current office presentation\.\n"
+              r"    if \(a\.hardworking\) \{.*?\n      return;\n    \}\n",
+              re.S,
+          )
+          s, _ = hard_agent.subn("\n", s, count=1)
+
+          # Remove the temporary HARDWORKING MODE guard from the CEO update.
+          hard_ceo = re.compile(
+              r"\n    if \(a\.hardworking\) \{\n"
+              r"      a\.path = null;\n"
+              r"      a\.lerp = null;\n"
+              r"      a\.bubbleT = 0;\n"
+              r"      a\.bubbleMsg = null;\n"
+              r"      a\.state = 'WORKING';\n"
+              r"      a\.sitting = true;\n"
+              r"      a\.facing = a\.seat\.facing;\n"
+              r"      return;\n"
+              r"    \}\n",
+              re.S,
+          )
+          s, _ = hard_ceo.subn("\n", s, count=1)
+
+          # Safety net: a WORKING agent that is no longer moving and no longer
+          # sitting must always navigate back to the assigned station.
+          marker = "    if (a.fading) {"
+          safety = (
+              "    // STATION SAFETY: never leave a working employee stranded on the floor.\n"
+              "    // Once movement finishes, send them back to their assigned station and seat.\n"
+              "    if (a.visible && a.state === 'WORKING' && !a.sitting && !a.path && !a.lerp) {\n"
+              "      goSitAtDesk(a);\n"
+              "      return;\n"
+              "    }\n\n"
+          )
+          if "// STATION SAFETY: never leave a working employee stranded" not in s:
               if marker not in s:
-                  raise SystemExit('makeAgent marker not found')
-              s = s.replace(marker, repl, 1)
+                  raise SystemExit('agent fading marker not found')
+              s = s.replace(marker, safety + marker, 1)
 
-          update_marker = "  function update(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);"
-          update_repl = "  function update(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);\n\n    // HARDWORKING MODE: keep every employee at their workstation.\n    // Breaks, away trips, meetings, stretches, chats and simulated\n    // offline states are disabled for the current office presentation.\n    if (a.hardworking) {\n      if (a.spot) { releaseSpot(a.spot); a.spot = null; }\n      a.path = null;\n      a.lerp = null;\n      a.bubbleT = 0;\n      a.bubbleMsg = null;\n      if (a.visible) {\n        a.state = 'WORKING';\n        a.sitting = true;\n        a.facing = a.seat.facing;\n      }\n      return;\n    }"
-          if "// HARDWORKING MODE:" not in s:
-              if update_marker not in s:
-                  raise SystemExit('update marker not found')
-              s = s.replace(update_marker, update_repl, 1)
-
-          ceo_marker = "  function updateCEO(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);"
-          ceo_repl = "  function updateCEO(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);\n    if (a.hardworking) {\n      a.path = null;\n      a.lerp = null;\n      a.bubbleT = 0;\n      a.bubbleMsg = null;\n      a.state = 'WORKING';\n      a.sitting = true;\n      a.facing = a.seat.facing;\n      return;\n    }"
-          if "if (a.hardworking) {\n      a.path = null;\n      a.lerp = null;\n      a.bubbleT = 0;" not in s:
+          # The CEO should also return to the executive station if its movement
+          # state ever leaves it WORKING but standing away from its seat.
+          ceo_marker = "    /* occasional executive pronouncements from the corner office */"
+          ceo_safety = (
+              "    // STATION SAFETY: keep the CEO anchored to the assigned station when working.\n"
+              "    if (a.state === 'WORKING' && !a.sitting && !a.path && !a.lerp) {\n"
+              "      a.sitting = true;\n"
+              "      a.pos.x = a.seat.x;\n"
+              "      a.pos.y = a.seat.y;\n"
+              "      a.facing = a.seat.facing;\n"
+              "    }\n"
+          )
+          if "// STATION SAFETY: keep the CEO anchored" not in s:
               if ceo_marker not in s:
-                  raise SystemExit('CEO marker not found')
-              s = s.replace(ceo_marker, ceo_repl, 1)
+                  raise SystemExit('CEO pronouncement marker not found')
+              s = s.replace(ceo_marker, ceo_safety + ceo_marker, 1)
 
-          p.write_text(s, encoding='utf-8')
+          if s == original:
+              print('No source changes needed.')
+          else:
+              p.write_text(s, encoding='utf-8')
+              print('Patched index.html successfully.')
 
       - name: Commit changes if needed
         shell: bash
@@ -54,5 +102,5 @@ jobs:
             echo "No changes needed."
             exit 0
           fi
-          git commit -m "Enable hardworking office mode"
+          git commit -m "Restore office movement and station return safety"
           git push
