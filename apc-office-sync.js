@@ -79,6 +79,15 @@
       #apcLivePanel .apc-st{display:flex;align-items:center;gap:4px;margin-top:5px;font-size:13px;font-weight:800;letter-spacing:.7px;color:#8b94a7}#apcLivePanel .apc-st.abs{color:#ff5a5f}
       #apcLivePanel .apc-st i{width:8px;height:8px;border-radius:50%;display:inline-block;background:#4cd964}.apc-st.abs i{background:#ff5a5f}
       #apcLivePanel .apc-num{text-align:right;font-size:18px;font-weight:900}.apc-num small{display:block;color:#8b94a7;font-size:12px}
+      #apcHHBuyers{position:absolute;left:14px;top:14px;z-index:27;width:390px;background:rgba(13,16,24,.97);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;overflow:hidden}
+      #apcHHBuyers .hd{padding:12px 14px;border-bottom:1px solid #262d3a;color:#5b9cff;font-size:15px;font-weight:900;letter-spacing:1px;text-align:center}
+      #apcHHBuyers .list{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+      #apcHHBuyers .buyer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:8px 9px;border:1px solid rgba(255,255,255,.06);border-radius:7px;background:#101620;min-height:52px;box-sizing:border-box}
+      #apcHHBuyers .name{font-size:14px;font-weight:900;line-height:1.15;color:#fff;overflow-wrap:anywhere}
+      #apcHHBuyers .meta{font-size:10px;color:#94a3b8;line-height:1.2;margin-top:3px}
+      #apcHHBuyers .status{font-size:13px;font-weight:900;white-space:nowrap;text-align:right}
+      #apcHHBuyers .live{color:#4cd964}.apc-hh-closed{color:#ff5a5f}
+      body.apc-floor-disabled #apcHHBuyers{position:fixed;left:22px;top:50%;transform:translateY(-50%)}
       .apc-agent-badge{position:absolute;z-index:27;pointer-events:none;transform:translate(-50%,-100%);min-width:150px;padding:7px 9px 8px;border-radius:6px;border:1px solid rgba(91,156,255,.45);background:rgba(13,16,24,.92);color:#e8ecf3;text-align:center;box-shadow:0 5px 12px rgba(0,0,0,.35);font-family:"Segoe UI",system-ui,sans-serif;transition:left .08s linear,top .08s linear}
       .apc-agent-badge .r{font-size:13px;font-weight:900;color:#5b9cff;letter-spacing:.5px}.apc-agent-badge .v{margin-top:3px;font-size:11px;font-weight:800;color:#8b94a7;white-space:nowrap}
       .apc-agent-badge.top{border-color:rgba(255,207,90,.78);box-shadow:0 0 14px rgba(255,207,90,.18),0 5px 12px rgba(0,0,0,.35)}.apc-agent-badge.top .r{color:#ffcf5a}.apc-agent-badge.abs{opacity:.6;border-color:rgba(123,132,148,.45)}
@@ -113,11 +122,44 @@
       document.head.appendChild(tvStyle);
     }
   }
+  function ensureHHBuyerPanel(){
+    if(document.getElementById('apcHHBuyers')) return;
+    const stage=document.getElementById('stage'); if(!stage)return;
+    const b=document.createElement('div');
+    b.id='apcHHBuyers';
+    b.style.display='none';
+    b.innerHTML='<div class="hd">AVAILABLE BUYERS · PACIFIC TIME</div><div class="list" id="apcHHBuyerList"></div>';
+    stage.appendChild(b);
+  }
+
+  function renderHHBuyers(){
+    ensureHHBuyerPanel();
+    const panel=document.getElementById('apcHHBuyers');
+    const list=document.getElementById('apcHHBuyerList');
+    if(!panel||!list)return;
+    if(state.source!=='apc'){
+      panel.style.display='none';
+      return;
+    }
+    const buyers=(state.data&&Array.isArray(state.data.buyers))?state.data.buyers:[];
+    if(!buyers.length){
+      panel.style.display='none';
+      return;
+    }
+    panel.style.display='block';
+    list.innerHTML=buyers.map(b=>{
+      const live=String(b.status||'').toUpperCase()==='LIVE'||b.live===true||String(b.availability||'').toUpperCase()==='LIVE';
+      const status=live?'LIVE':'CLOSED';
+      return '<div class="buyer"><div><div class="name">'+esc(b.name||'')+'</div><div class="meta">'+esc(b.vertical||'')+' · '+esc(b.hours||'')+'</div></div><div class="status '+(live?'live':'apc-hh-closed')+'">● '+status+'</div></div>';
+    }).join('');
+  }
+
   function ensurePanel(){
     if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;
     const p=document.createElement('div'); p.id='apcLivePanel';
     p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
     stage.appendChild(p);
+    ensureHHBuyerPanel();
   }
   const SETTINGS_AGENTS=['Marnelie','Selyn','Edna','Angelo','Karen','Zarah','Gia','Cherylyn','Minjubail','Rea','Jhoana','Shanley','Normie','Angelica','Carnel','Maika','Arc','Frank','JD','Margarita','Lucie','Dominic','Alfredo Molina','Abbey'];
   const DEFAULT_BREAKS={};
@@ -379,6 +421,7 @@ function updateHeader(){
   }
 
   function updatePanel(){
+    renderHHBuyers();
     const p=document.getElementById('apcLivePanel'); if(!p)return;
     const good = state.source==='rr' ? !!state.rrData : state.source==='apc' ? !!state.data : (!!state.data||!!state.rrData);
     p.classList.toggle('offline',!good);
@@ -479,7 +522,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     });
   }
 
-  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();loadFloorPlanDisabled();setTimeout(()=>{setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
+  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();ensureHHBuyerPanel();loadFloorPlanDisabled();setTimeout(()=>{setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
 
   function loop(){positionBadges();refreshBadges();requestAnimationFrame(loop)}
 
