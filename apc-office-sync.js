@@ -12,7 +12,7 @@
   const NAME_TO_PC = {'marnelie':'PC-1','selyn':'PC-2','edna':'PC-3','angelo':'PC-4','karen':'PC-5','zara':'PC-6','zarah':'PC-6','gia':'PC-7','cherylyn':'PC-8','arc':'PC-10','frank':'PC-11','minjubail':'PC-13','jd':'PC-14','rea':'PC-15','jhoana':'PC-16'};
   const ACTUAL_OFFICE = {'PC-1':'Marnelie','PC-2':'Selyn','PC-3':'Edna','PC-4':'Angelo','PC-5':'Karen','PC-6':'Zarah','PC-7':'Gia','PC-8':'Cherylyn','PC-9':'Red Molina','PC-10':'Arc','PC-11':'Frank','PC-12':null,'PC-13':'Minjubail','PC-14':'JD','PC-15':'Rea','PC-16':'Jhoana','PC-17':null,'PC-18':null,'PC-19':'Carnel','PC-20':'Maika','PC-21':'Shanley','PC-22':'Normie','PC-23':'Angelica'};
   const GENDER = {'marnelie':'female','selyn':'female','edna':'female','minjubail':'female','karen':'female','zarah':'female','zara':'female','gia':'female','cherylyn':'female','rea':'female','jhoana':'female','shanley':'female','angelica':'female','normie':'female','carnel':'female','maika':'female','angelo':'male','alfredo molina':'male','red molina':'male','frank':'male','arc':'male','jd':'male'};
-  const state = {data:null,rrData:null,officeSettings:null,mapped:[],rrMapped:[],loading:false,timer:null,settingsTimer:null,started:false,badgesVisible:false,source:'all',settingsOpen:false};
+  const state = {data:null,rrData:null,officeSettings:null,mapped:[],rrMapped:[],loading:false,timer:null,settingsTimer:null,started:false,badgesVisible:false,source:'all',settingsOpen:false,floorPlanDisabled:false};
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pct=v=>(Number(v||0)*100).toFixed(1)+'%';
   const money=v=>Number(v||0).toLocaleString();
@@ -34,6 +34,16 @@
       #apcOfficeSchedule .hd b{font-size:16px;letter-spacing:1.6px;color:#60a5fa}
       #apcOfficeSchedule .body{padding:14px 18px;overflow:auto;max-height:70vh}
       #apcOfficeSchedule .hint{font-size:11px;color:#94a3b8;margin-bottom:12px}
+      #apcOfficeSchedule .display-setting{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:0 0 14px;padding:12px 14px;border:1px solid #2f3948;border-radius:9px;background:#0d131b}
+      #apcOfficeSchedule .display-setting .copy{display:flex;flex-direction:column;gap:4px;text-align:left}
+      #apcOfficeSchedule .display-setting .copy b{font-size:12px;color:#fff;letter-spacing:.8px}
+      #apcOfficeSchedule .display-setting .copy span{font-size:10px;color:#94a3b8;line-height:1.35}
+      #apcOfficeSchedule .switch{position:relative;width:48px;height:26px;flex:0 0 auto}
+      #apcOfficeSchedule .switch input{opacity:0;width:0;height:0}
+      #apcOfficeSchedule .slider{position:absolute;inset:0;border-radius:999px;background:#273140;border:1px solid #394455;cursor:pointer;transition:.18s}
+      #apcOfficeSchedule .slider:before{content:"";position:absolute;width:20px;height:20px;left:2px;top:2px;border-radius:50%;background:#94a3b8;transition:.18s}
+      #apcOfficeSchedule .switch input:checked + .slider{background:#1f4f88;border-color:#5b9cff}
+      #apcOfficeSchedule .switch input:checked + .slider:before{transform:translateX(22px);background:#fff}
       #apcOfficeSchedule table{width:100%;border-collapse:collapse}
       #apcOfficeSchedule th,#apcOfficeSchedule td{padding:8px 6px;border-bottom:1px solid #252e3b;font-size:11px;text-align:center}
       #apcOfficeSchedule th{color:#dce7f5;font-size:12px;letter-spacing:.8px}
@@ -42,6 +52,17 @@
       #apcOfficeSchedule .foot{padding:12px 18px;border-top:1px solid #2a3340;display:flex;justify-content:flex-end;gap:8px}
       #apcOfficeSchedule button{border:1px solid #394455;background:#18212d;color:#dce7f5;border-radius:7px;padding:8px 12px;font:800 10px "Segoe UI",system-ui,sans-serif;cursor:pointer}
       #apcOfficeSchedule button.primary{background:#1f4f88;border-color:#4b94ed;color:#fff}\n      #apcLivePanel .apc-tab{flex:1;border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:10px 8px;font:900 11px/1.1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-tab:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-tab.on{color:#fff;border-color:#5b9cff;background:rgba(91,156,255,.16);box-shadow:inset 0 0 0 1px rgba(91,156,255,.18)}
+      body.apc-floor-disabled #stage{background:#080b11!important}
+      body.apc-floor-disabled #world,
+      body.apc-floor-disabled #stageVignette,
+      body.apc-floor-disabled #infoPanel,
+      body.apc-floor-disabled #tooltip{visibility:hidden!important;pointer-events:none!important}
+      body.apc-floor-disabled #apcLivePanel{position:fixed!important;left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(920px,calc(100vw - 40px))!important;max-width:calc(100vw - 40px)!important;max-height:calc(100vh - 40px)!important;z-index:999!important}
+      body.apc-floor-disabled #apcLivePanel .apc-list{max-height:none!important}
+      body.apc-floor-disabled #apcLivePanel .apc-title{font-size:28px!important}
+      body.apc-floor-disabled #apcLivePanel .apc-name{font-size:24px!important}
+      body.apc-floor-disabled #apcLivePanel .apc-rank{font-size:28px!important}
+      body.apc-floor-disabled #apcLivePanel .apc-num{font-size:20px!important}
       #apcLivePanel .apc-title{font-size:24px;font-weight:900;letter-spacing:2px;color:#5b9cff}
       #apcLivePanel .apc-tools{display:flex;align-items:center;gap:8px}\n      #apcLivePanel .apc-toggle{border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:5px 8px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-toggle:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-toggle.on{color:#5b9cff;border-color:rgba(91,156,255,.55);background:rgba(91,156,255,.12)}\n      #apcLivePanel .apc-sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;color:#8b94a7}
       #apcLivePanel .apc-dot{width:10px;height:10px;border-radius:50%;background:#4cd964;box-shadow:0 0 7px rgba(76,217,100,.55)}
@@ -104,9 +125,12 @@
   function ensureScheduleModal(){
     if(document.getElementById('apcOfficeSchedule'))return;
     const m=document.createElement('div');m.id='apcOfficeSchedule';m.style.display='none';
-    m.innerHTML='<div class="box"><div class="hd"><b>BREAK SCHEDULE & WORK LOCATION</b><button id="apcSchedClose">CLOSE</button></div><div class="body"><div class="hint">Set individual coffee, lunch and bio-break times. Choose OFFICE or WORK FROM HOME. Changes are saved to the main Google Sheet and follow the TV to other PCs.</div><table><thead><tr><th>AGENT</th><th>COFFEE</th><th>LUNCH</th><th>BIO</th><th>LOCATION</th></tr></thead><tbody id="apcSchedBody"></tbody></table></div><div class="foot"><button id="apcSchedSave" class="primary">SAVE ALL</button></div></div>';
+    m.innerHTML='<div class="box"><div class="hd"><b>OFFICE SETTINGS</b><button id="apcSchedClose">CLOSE</button></div><div class="body"><div class="display-setting"><div class="copy"><b>DISABLE FLOOR PLAN</b><span>Hide the 2D floor and center the Live Performance Center for the TV.</span></div><label class="switch"><input type="checkbox" id="apcFloorDisabled"><span class="slider"></span></label></div><div class="hint">Set individual coffee, lunch and bio-break times. Choose OFFICE or WORK FROM HOME. Break schedules are saved to the main Google Sheet.</div><table><thead><tr><th>AGENT</th><th>COFFEE</th><th>LUNCH</th><th>BIO</th><th>LOCATION</th></tr></thead><tbody id="apcSchedBody"></tbody></table></div><div class="foot"><button id="apcSchedSave" class="primary">SAVE ALL</button></div></div>';
     document.body.appendChild(m);
     document.getElementById('apcSchedClose').onclick=()=>{m.style.display='none';state.settingsOpen=false;};
+    document.getElementById('apcFloorDisabled').addEventListener('change',e=>{
+      setFloorPlanDisabled(e.target.checked);
+    });
     document.getElementById('apcSchedSave').onclick=saveOfficeSettings;
   }
   function normalizeOfficeSettings(data){
@@ -126,7 +150,36 @@
       const x=data.agents[n];
       return '<tr><td class="name">'+esc(n)+'</td><td><input type="time" data-k="coffee" data-agent="'+esc(n)+'" value="'+esc(x.coffee)+'"></td><td><input type="time" data-k="lunch" data-agent="'+esc(n)+'" value="'+esc(x.lunch)+'"></td><td><input type="time" data-k="bio" data-agent="'+esc(n)+'" value="'+esc(x.bio)+'"></td><td><select data-k="location" data-agent="'+esc(n)+'"><option value="OFFICE"'+(x.location==='OFFICE'?' selected':'')+'>OFFICE</option><option value="WFH"'+(x.location==='WFH'?' selected':'')+'>WORK FROM HOME</option></select></td></tr>';
     }).join('');
+    const toggle=document.getElementById('apcFloorDisabled');
+    if(toggle) toggle.checked=state.floorPlanDisabled;
     document.getElementById('apcOfficeSchedule').style.display='flex'; state.settingsOpen=true;
+  }
+  function setFloorPlanDisabled(disabled){
+    state.floorPlanDisabled=!!disabled;
+    try{localStorage.setItem('apcFloorPlanDisabled',state.floorPlanDisabled?'1':'0');}catch(_){}
+    document.body.classList.toggle('apc-floor-disabled',state.floorPlanDisabled);
+    const world=document.getElementById('world');
+    const vignette=document.getElementById('stageVignette');
+    const info=document.getElementById('infoPanel');
+    const tooltip=document.getElementById('tooltip');
+    [world,vignette,info,tooltip].forEach(el=>{if(el){el.style.visibility=state.floorPlanDisabled?'hidden':'';el.style.pointerEvents=state.floorPlanDisabled?'none':'';}});
+    const panel=document.getElementById('apcLivePanel');
+    if(panel){
+      panel.style.position=state.floorPlanDisabled?'fixed':'absolute';
+      panel.style.left=state.floorPlanDisabled?'50%':'';
+      panel.style.right=state.floorPlanDisabled?'auto':'14px';
+      panel.style.top=state.floorPlanDisabled?'50%':'14px';
+      panel.style.transform=state.floorPlanDisabled?'translate(-50%,-50%)':'';
+      panel.style.width=state.floorPlanDisabled?'min(920px,calc(100vw - 40px))':'720px';
+      panel.style.maxWidth=state.floorPlanDisabled?'calc(100vw - 40px)':'calc(100vw - 28px)';
+      panel.style.zIndex=state.floorPlanDisabled?'999':'28';
+    }
+    const toggle=document.getElementById('apcFloorDisabled');
+    if(toggle) toggle.checked=state.floorPlanDisabled;
+  }
+  function loadFloorPlanDisabled(){
+    try{state.floorPlanDisabled=localStorage.getItem('apcFloorPlanDisabled')==='1';}catch(_){state.floorPlanDisabled=false;}
+    setFloorPlanDisabled(state.floorPlanDisabled);
   }
   function openOfficeSettings(){ensureScheduleModal();renderOfficeSettings();}
   async function saveOfficeSettings(){
@@ -426,7 +479,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     });
   }
 
-  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();setTimeout(()=>{setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
+  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();loadFloorPlanDisabled();setTimeout(()=>{setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
 
   function loop(){positionBadges();refreshBadges();requestAnimationFrame(loop)}
 
