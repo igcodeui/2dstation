@@ -80,11 +80,11 @@
       #apcLivePanel .apc-st i{width:8px;height:8px;border-radius:50%;display:inline-block;background:#4cd964}.apc-st.abs i{background:#ff5a5f}
       #apcLivePanel .apc-num{text-align:right;font-size:18px;font-weight:900}.apc-num small{display:block;color:#8b94a7;font-size:12px}
       #apcHHBuyers{position:absolute;left:14px;top:14px;z-index:27;width:390px;background:rgba(13,16,24,.97);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;overflow:hidden}
-      #apcHHBuyers .hd{padding:12px 14px;border-bottom:1px solid #262d3a;color:#5b9cff;font-size:15px;font-weight:900;letter-spacing:1px;text-align:center}
+      #apcHHBuyers .hd{padding:16px 18px;border-bottom:1px solid #262d3a;color:#5b9cff;font-size:15px;font-weight:900;letter-spacing:1px;text-align:center}
       #apcHHBuyers .list{padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
       #apcHHBuyers .buyer{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:8px 9px;border:1px solid rgba(255,255,255,.06);border-radius:7px;background:#101620;min-height:52px;box-sizing:border-box}
-      #apcHHBuyers .name{font-size:14px;font-weight:900;line-height:1.15;color:#fff;overflow-wrap:anywhere}
-      #apcHHBuyers .meta{font-size:10px;color:#94a3b8;line-height:1.2;margin-top:3px}
+      #apcHHBuyers .name{font-size:18px;font-weight:900;line-height:1.15;color:#fff;overflow-wrap:anywhere}
+      #apcHHBuyers .meta{font-size:12px;color:#94a3b8;line-height:1.2;margin-top:3px}
       #apcHHBuyers .status{font-size:13px;font-weight:900;white-space:nowrap;text-align:right}
       #apcHHBuyers .live{color:#4cd964}.apc-hh-closed{color:#ff5a5f}
       body.apc-floor-disabled #apcHHBuyers{position:fixed;left:22px;top:50%;transform:translateY(-50%)}
