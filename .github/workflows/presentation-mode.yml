@@ -1,0 +1,169 @@
+name: Floor Plan Presentation Mode
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  add-presentation-mode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add centered leaderboard presentation mode
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('apc-office-sync.js')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          marker = "\n})();"
+          code = r'''
+
+  /* ============================================================
+     FLOOR PLAN PRESENTATION MODE
+     Clicking a FLOOR PLAN tab/button switches the TV into a
+     leaderboard-only view: the office floor plan is hidden,
+     controls are disabled, and the live leaderboard is centered.
+     ============================================================ */
+  function enableFloorPlanPresentation(){
+    document.body.classList.add('apc-presentation-mode');
+    const panel=document.getElementById('apcLivePanel');
+    if(panel){ panel.classList.add('apc-centered'); }
+    const canvas=document.getElementById('world');
+    if(canvas){ canvas.style.pointerEvents='none'; canvas.setAttribute('aria-hidden','true'); }
+    const info=document.getElementById('infoPanel');
+    if(info){ info.classList.add('hidden'); }
+    const tip=document.getElementById('tooltip');
+    if(tip){ tip.classList.add('hidden'); }
+    document.querySelectorAll('[data-apc-floor-tab], .apc-floor-tab').forEach(el=>el.classList.add('apc-floor-active'));
+  }
+
+  function disableFloorPlanPresentation(){
+    document.body.classList.remove('apc-presentation-mode');
+    const panel=document.getElementById('apcLivePanel');
+    if(panel){ panel.classList.remove('apc-centered'); }
+    const canvas=document.getElementById('world');
+    if(canvas){ canvas.style.pointerEvents=''; canvas.removeAttribute('aria-hidden'); }
+    document.querySelectorAll('[data-apc-floor-tab], .apc-floor-tab').forEach(el=>el.classList.remove('apc-floor-active'));
+  }
+
+  function wireFloorPlanTab(){
+    const candidates=[...document.querySelectorAll('button,a,[role="tab"],.tab,.ctl')];
+    let found=false;
+    candidates.forEach(el=>{
+      const txt=String(el.textContent||'').trim().replace(/\s+/g,' ').toLowerCase();
+      if(txt==='floor plan' || txt.includes('floor plan')){
+        found=true;
+        el.dataset.apcFloorTab='1';
+        el.classList.add('apc-floor-tab');
+        if(!el.dataset.apcFloorWired){
+          el.dataset.apcFloorWired='1';
+          el.addEventListener('click',ev=>{
+            ev.preventDefault();
+            ev.stopPropagation();
+            enableFloorPlanPresentation();
+          },true);
+        }
+      }
+    });
+
+    if(!found && !document.getElementById('apcFloorPresentationTab')){
+      const host=document.getElementById('topbar')||document.body;
+      const btn=document.createElement('button');
+      btn.id='apcFloorPresentationTab';
+      btn.type='button';
+      btn.className='apc-floor-tab';
+      btn.dataset.apcFloorTab='1';
+      btn.textContent='FLOOR PLAN';
+      btn.addEventListener('click',ev=>{
+        ev.preventDefault();
+        enableFloorPlanPresentation();
+      });
+      host.appendChild(btn);
+    }
+  }
+
+  (function installFloorPresentationStyles(){
+    if(document.getElementById('apc-floor-presentation-style')) return;
+    const st=document.createElement('style');
+    st.id='apc-floor-presentation-style';
+    st.textContent=`
+      #apcFloorPresentationTab,.apc-floor-tab{
+        border:1px solid #333c4d;background:#151a23;color:#dce7f5;
+        border-radius:9px;padding:9px 13px;font:900 10px/1 "Segoe UI",system-ui,sans-serif;
+        letter-spacing:1px;cursor:pointer;white-space:nowrap;
+      }
+      #apcFloorPresentationTab:hover,.apc-floor-tab:hover{border-color:#5b9cff;color:#fff}
+      .apc-floor-active{background:rgba(91,156,255,.16)!important;border-color:#5b9cff!important;color:#fff!important}
+      body.apc-presentation-mode #world,
+      body.apc-presentation-mode #stageVignette,
+      body.apc-presentation-mode #tooltip,
+      body.apc-presentation-mode #infoPanel{visibility:hidden!important;pointer-events:none!important}
+      body.apc-presentation-mode #stage{background:#080b11!important}
+      body.apc-presentation-mode #apcLivePanel{
+        position:fixed!important;
+        left:50%!important;
+        top:50%!important;
+        right:auto!important;
+        transform:translate(-50%,-50%)!important;
+        width:min(920px,calc(100vw - 40px))!important;
+        max-width:calc(100vw - 40px)!important;
+        max-height:calc(100vh - 110px)!important;
+        z-index:999!important;
+      }
+      body.apc-presentation-mode #apcLivePanel .apc-list{max-height:calc(100vh - 450px)!important}
+      body.apc-presentation-mode #apcLivePanel .apc-title{font-size:28px!important}
+      body.apc-presentation-mode #apcLivePanel .apc-name{font-size:24px!important}
+      body.apc-presentation-mode #apcLivePanel .apc-rank{font-size:28px!important}
+      body.apc-presentation-mode #apcLivePanel .apc-num{font-size:20px!important}
+      body.apc-presentation-mode #apcLivePanel .apc-st{font-size:14px!important}
+      body.apc-presentation-mode #apcLivePanel .apc-kpi b{font-size:40px!important}
+      @media(max-width:760px){
+        body.apc-presentation-mode #apcLivePanel{width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important}
+        body.apc-presentation-mode #apcLivePanel .apc-title{font-size:18px!important}
+        body.apc-presentation-mode #apcLivePanel .apc-name{font-size:18px!important}
+      }
+    `;
+    document.head.appendChild(st);
+  })();
+
+  const floorObserver=new MutationObserver(()=>wireFloorPlanTab());
+  function startFloorPresentationMode(){
+    wireFloorPlanTab();
+    floorObserver.observe(document.body,{childList:true,subtree:true});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',startFloorPresentationMode,{once:true});
+  else startFloorPresentationMode();
+'''
+
+          if 'FLOOR PLAN PRESENTATION MODE' not in s:
+              idx=s.rfind(marker)
+              if idx < 0:
+                  raise SystemExit('IIFE close marker not found')
+              s=s[:idx]+code+s[idx:]
+
+          if s != original:
+              p.write_text(s,encoding='utf-8')
+              print('Floor plan presentation mode added.')
+          else:
+              print('Floor plan presentation mode already present.')
+
+      - name: Commit changes if needed
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apc-office-sync.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Add centered floor plan leaderboard presentation mode"
+          git push
