@@ -26,7 +26,17 @@
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
-      #apcLivePanel .apc-st.wfh{color:#60a5fa}
+      #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
+      #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
+      #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
+      #apcLivePanel .apc-buyer-row{display:grid;grid-template-columns:1fr 90px 95px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid rgba(255,255,255,.04);font-size:11px}
+      #apcLivePanel .apc-buyer-row:first-child{border-top:0}
+      #apcLivePanel .apc-buyer-name{font-weight:900;color:#fff}
+      #apcLivePanel .apc-buyer-vertical{color:#94a3b8;font-size:10px}
+      #apcLivePanel .apc-buyer-status{font-weight:900;text-align:right}
+      #apcLivePanel .apc-buyer-status.live{color:#4cd964}
+      #apcLivePanel .apc-buyer-status.closed{color:#ff5a5f}
+      #apcLivePanel .apc-buyer-empty{padding:14px 12px;color:#94a3b8;font-size:11px;text-align:center}      #apcLivePanel .apc-st.wfh{color:#60a5fa}
       #apcLivePanel .apc-st.wfh i{background:#60a5fa}
       #apcOfficeSchedule{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.58);font-family:"Segoe UI",system-ui,sans-serif}
       #apcOfficeSchedule .box{width:min(880px,calc(100vw - 28px));max-height:86vh;background:#111720;border:1px solid #394455;border-radius:14px;box-shadow:0 24px 70px rgba(0,0,0,.55);overflow:hidden}
@@ -125,7 +135,7 @@
   function ensurePanel(){
     if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;
     const p=document.createElement('div'); p.id='apcLivePanel';
-    p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcMinimize" class="apc-toggle">MINIMIZE</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
+    p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcMinimize" class="apc-toggle">MINIMIZE</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div id="apcBuyerPanel" class="apc-buyer-panel" style="display:none"></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
     stage.appendChild(p);
   }
   const SETTINGS_AGENTS=['Marnelie','Selyn','Edna','Angelo','Karen','Zarah','Gia','Cherylyn','Minjubail','Rea','Jhoana','Shanley','Normie','Angelica','Carnel','Maika','Arc','Frank','JD','Margarita','Lucie','Dominic','Alfredo Molina','Abbey'];
@@ -381,7 +391,22 @@ function updateHeader(){
     if(cd&&d)cd.textContent=d;
   }
 
-  function updatePanel(){
+    function renderHelpingHandsBuyers(){
+    const panel=document.getElementById('apcBuyerPanel');
+    if(!panel)return;
+    if(state.source!=='apc'){panel.style.display='none';return;}
+    const buyers=(state.data&&Array.isArray(state.data.buyers))?state.data.buyers:[];
+    if(!buyers.length){panel.style.display='none';return;}
+    panel.style.display='';
+    const rows=buyers.map(b=>{
+      const live=String(b.status||'').toUpperCase()==='LIVE' || b.live===true || String(b.availability||'').toUpperCase()==='LIVE';
+      const status=live?'LIVE':'CLOSED';
+      return '<div class="apc-buyer-row"><div><div class="apc-buyer-name">'+esc(b.name||b.buyer||'')+'</div><div class="apc-buyer-vertical">'+esc(b.vertical||'')+'</div></div><div class="apc-buyer-vertical">'+esc(b.hours||'')+'</div><div class="apc-buyer-status '+(live?'live':'closed')+'">● '+status+'</div></div>';
+    }).join('');
+    panel.innerHTML='<div class="apc-buyer-hd">AVAILABLE BUYERS · PACIFIC TIME</div><div class="apc-buyer-list">'+(rows||'<div class="apc-buyer-empty">No buyer availability data</div>')+'</div>';
+  }
+
+function updatePanel(){
     const p=document.getElementById('apcLivePanel'); if(!p)return;
     const good = state.source==='rr' ? !!state.rrData : state.source==='apc' ? !!state.data : (!!state.data||!!state.rrData);
     p.classList.toggle('offline',!good);
@@ -414,6 +439,7 @@ function updateHeader(){
       const rev=rr?null:Number(row.todayRevenue||0);
       return '<div class="apc-row '+(rank===1?'top rank1':rank===2?'rank2':rank===3?'rank3':'')+'"><div class="apc-rank">#'+esc(rank||'—')+'</div><div><div class="apc-name">'+esc(row.name)+'</div><div class="apc-st '+(abs?'abs':wfh?'wfh':'')+'"><i></i>'+esc(sub)+'</div></div><div class="apc-num">'+money(tr)+'<small>TR</small></div><div class="apc-num">'+(rev==null?'—':money(rev))+'<small>REV</small></div></div>';
     }).join('');
+    renderHelpingHandsBuyers();
   }
 
   function makeBadges(){
