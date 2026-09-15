@@ -32,7 +32,7 @@
       #apcLivePanel .apc-buyer-row{display:grid;grid-template-columns:1fr 90px 95px;gap:8px;align-items:center;padding:8px 10px;border-top:1px solid rgba(255,255,255,.04);font-size:11px}
       #apcLivePanel .apc-buyer-row:first-child{border-top:0}
       #apcLivePanel .apc-buyer-name{font-weight:900;color:#fff}
-      #apcLivePanel .apc-buyer-vertical{color:#94a3b8;font-size:10px}
+      #apcLivePanel .apc-buyer-vertical{color:#94a3b8;font-size:12px}
       #apcLivePanel .apc-buyer-status{font-weight:900;text-align:right}
       #apcLivePanel .apc-buyer-status.live{color:#4cd964}
       #apcLivePanel .apc-buyer-status.closed{color:#ff5a5f}
