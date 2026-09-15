@@ -7,7 +7,7 @@
   'use strict';
   const OFFICE_API = 'https://script.google.com/macros/s/AKfycbx-3fn-3ByKw2Ef5fYJ0ulY-Bp4TYPit7fMBcsdDmKmtaPsyNZ7UzWvKuSrpqU5Y6V6/exec';
   const POLL_MS = 30000;
-  const NAME_TO_PC = {'cherylyn':'PC-1','gia':'PC-2','marnelie':'PC-3','minjubail':'PC-4','edna':'PC-5','selyn':'PC-6','karen':'PC-7','zara':'PC-8','angelo':'PC-10'};
+  const NAME_TO_PC = {'marnelie':'PC-1','selyn':'PC-2','edna':'PC-3','angelo':'PC-4','karen':'PC-5','zara':'PC-6','zarah':'PC-6','gia':'PC-7','cherylyn':'PC-8','arc':'PC-10','frank':'PC-11','minjubail':'PC-13','jd':'PC-14','rea':'PC-15','jhoana':'PC-16'};
   const state = {data:null,mapped:[],loading:false,timer:null,started:false,badgesVisible:false};
   const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const pct=v=>(Number(v||0)*100).toFixed(1)+'%';
