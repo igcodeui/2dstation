@@ -5,7 +5,7 @@
    ============================================================ */
 (() => {
   'use strict';
-  const OFFICE_API = 'https:script.google.com/macros/s/AKfycbzp2ys7EwU_wiWHNAISRaIBIWeddE4CxzQv-r4aivvfKGGMpNc21JZa5yScbI4ePwDy4Q/exec';
+  const OFFICE_API = 'https://script.google.com/macros/s/AKfycbzp2ys7EwU_wiWHNAISRaIBIWeddE4CxzQv-r4aivvfKGGMpNc21JZa5yScbI4ePwDy4Q/exec';
   const RR_API = 'https://script.google.com/macros/s/AKfycbyMXt3sSNYLvpL4ZukswXlaIi1kXI3X88ohn163h-QGJk4MmOBN82LfrbmDhcYNSrNG/exec';
   const POLL_MS = 30000;
   const NAME_TO_PC = {'marnelie':'PC-1','selyn':'PC-2','edna':'PC-3','angelo':'PC-4','karen':'PC-5','zara':'PC-6','zarah':'PC-6','gia':'PC-7','cherylyn':'PC-8','arc':'PC-10','frank':'PC-11','minjubail':'PC-13','jd':'PC-14','rea':'PC-15','jhoana':'PC-16'};
