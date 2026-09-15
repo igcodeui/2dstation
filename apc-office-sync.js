@@ -7,7 +7,7 @@
   'use strict';
   const OFFICE_API = 'https://script.google.com/macros/s/AKfycbzp2ys7EwU_wiWHNAISRaIBIWeddE4CxzQv-r4aivvfKGGMpNc21JZa5yScbI4ePwDy4Q/exec';
   const RR_API = 'https://script.google.com/macros/s/AKfycbyMXt3sSNYLvpL4ZukswXlaIi1kXI3X88ohn163h-QGJk4MmOBN82LfrbmDhcYNSrNG/exec';
-  const OFFICE_SETTINGS_API = OFFICE_API;
+  const OFFICE_SETTINGS_API = OFFICE_API + '?api=officeSettings';
   const POLL_MS = 30000;
   const NAME_TO_PC = {'marnelie':'PC-1','selyn':'PC-2','edna':'PC-3','angelo':'PC-4','karen':'PC-5','zara':'PC-6','zarah':'PC-6','gia':'PC-7','cherylyn':'PC-8','arc':'PC-10','frank':'PC-11','minjubail':'PC-13','jd':'PC-14','rea':'PC-15','jhoana':'PC-16'};
   const ACTUAL_OFFICE = {'PC-1':'Marnelie','PC-2':'Selyn','PC-3':'Edna','PC-4':'Angelo','PC-5':'Karen','PC-6':'Zarah','PC-7':'Gia','PC-8':'Cherylyn','PC-9':'Red Molina','PC-10':'Arc','PC-11':'Frank','PC-12':null,'PC-13':'Minjubail','PC-14':'JD','PC-15':'Rea','PC-16':'Jhoana','PC-17':null,'PC-18':null,'PC-19':'Carnel','PC-20':'Maika','PC-21':'Shanley','PC-22':'Normie','PC-23':'Angelica'};
@@ -112,10 +112,10 @@
     persistSettingsJSONP(payload).then(()=>{document.getElementById('apcOfficeSchedule').style.display='none';state.settingsOpen=false;applyDisplaySource();updatePanel();});
   }
   function getSettingsFromServer(){
-    return loadJSONP(OFFICE_SETTINGS_API+'&action=getOfficeSettings');
+    return loadJSONP(OFFICE_SETTINGS_API);
   }
   function persistSettingsJSONP(data){
-    const url=OFFICE_SETTINGS_API+'&action=saveOfficeSettings&data='+encodeURIComponent(JSON.stringify(data));
+    const url=OFFICE_SETTINGS_API+'&action=save&data='+encodeURIComponent(JSON.stringify(data));
     return loadJSONP(url);
   }
   
@@ -363,7 +363,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
       const timeout=setTimeout(()=>finish(reject,new Error('API timeout')),12000);
       window[cb]=p=>finish(resolve,p);
       script.onerror=()=>finish(reject,new Error('API script load failed'));
-      script.src=url+'?api=office&callback='+encodeURIComponent(cb)+'&_='+Date.now();
+      const sep=url.includes('?')?'&':'?'; script.src=url+sep+'api=office&callback='+encodeURIComponent(cb)+'&_='+Date.now();
       document.head.appendChild(script);
     });
   }
