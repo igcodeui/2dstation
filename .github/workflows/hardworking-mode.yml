@@ -1,0 +1,58 @@
+name: Hardworking Mode
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  apply-hardworking-mode:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch office behavior
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+
+          marker = "      breakKind: null\n    };"
+          repl = "      breakKind: null,\n      hardworking: true\n    };"
+          if "hardworking: true" not in s:
+              if marker not in s:
+                  raise SystemExit('makeAgent marker not found')
+              s = s.replace(marker, repl, 1)
+
+          update_marker = "  function update(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);"
+          update_repl = "  function update(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);\n\n    // HARDWORKING MODE: keep every employee at their workstation.\n    // Breaks, away trips, meetings, stretches, chats and simulated\n    // offline states are disabled for the current office presentation.\n    if (a.hardworking) {\n      if (a.spot) { releaseSpot(a.spot); a.spot = null; }\n      a.path = null;\n      a.lerp = null;\n      a.bubbleT = 0;\n      a.bubbleMsg = null;\n      if (a.visible) {\n        a.state = 'WORKING';\n        a.sitting = true;\n        a.facing = a.seat.facing;\n      }\n      return;\n    }"
+          if "// HARDWORKING MODE:" not in s:
+              if update_marker not in s:
+                  raise SystemExit('update marker not found')
+              s = s.replace(update_marker, update_repl, 1)
+
+          ceo_marker = "  function updateCEO(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);"
+          ceo_repl = "  function updateCEO(a, dt) {\n    a.bubbleT = Math.max(0, a.bubbleT - dt);\n    if (a.hardworking) {\n      a.path = null;\n      a.lerp = null;\n      a.bubbleT = 0;\n      a.bubbleMsg = null;\n      a.state = 'WORKING';\n      a.sitting = true;\n      a.facing = a.seat.facing;\n      return;\n    }"
+          if "if (a.hardworking) {\n      a.path = null;\n      a.lerp = null;\n      a.bubbleT = 0;" not in s:
+              if ceo_marker not in s:
+                  raise SystemExit('CEO marker not found')
+              s = s.replace(ceo_marker, ceo_repl, 1)
+
+          p.write_text(s, encoding='utf-8')
+
+      - name: Commit changes if needed
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Enable hardworking office mode"
+          git push
