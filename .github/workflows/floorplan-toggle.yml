@@ -1,0 +1,136 @@
+name: Floor Plan Display Toggle
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  add-toggle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Add floor plan hide/show toggle
+        shell: python
+        run: |
+          from pathlib import Path
+
+          p = Path('apc-office-sync.js')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          marker = "  function ensurePanel(){\n    if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;\n    const p=document.createElement('div'); p.id='apcLivePanel';"
+          replacement = """  function ensurePanel(){
+    if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;
+    const p=document.createElement('div'); p.id='apcLivePanel';"""
+          if marker not in s:
+              raise SystemExit('ensurePanel marker not found')
+
+          # Add a dedicated hide/show button inside the live leaderboard header.
+          old_html = '<div class="apc-tools"><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync">'
+          new_html = '<div class="apc-tools"><button id="apcFloorPlanToggle" class="apc-toggle">HIDE FLOOR PLAN</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync">'
+          if 'id="apcFloorPlanToggle"' not in s:
+              if old_html not in s:
+                  raise SystemExit('leaderboard header marker not found')
+              s = s.replace(old_html, new_html, 1)
+
+          # Add stateful hide/show behavior. Hidden floor plan = centered leaderboard.
+          mode_marker = "  function ensureScheduleModal(){"
+          mode_code = r'''
+
+  /* ============================================================
+     FLOOR PLAN TOGGLE
+     Dedicated TV control: hide the floor plan and center the
+     leaderboard; click again to restore the floor plan.
+     ============================================================ */
+  function setFloorPlanHidden(hidden){
+    document.body.classList.toggle('apc-floor-hidden', !!hidden);
+    const canvas=document.getElementById('world');
+    const vignette=document.getElementById('stageVignette');
+    const info=document.getElementById('infoPanel');
+    const tip=document.getElementById('tooltip');
+    if(canvas){ canvas.style.visibility=hidden?'hidden':''; canvas.style.pointerEvents=hidden?'none':''; }
+    if(vignette) vignette.style.visibility=hidden?'hidden':'';
+    if(info) info.style.visibility=hidden?'hidden':'';
+    if(tip) tip.style.visibility=hidden?'hidden':'';
+    const panel=document.getElementById('apcLivePanel');
+    if(panel) panel.style.pointerEvents='auto';
+    const btn=document.getElementById('apcFloorPlanToggle');
+    if(btn){ btn.textContent=hidden?'SHOW FLOOR PLAN':'HIDE FLOOR PLAN'; btn.classList.toggle('on',!!hidden); }
+  }
+
+  function wireFloorPlanToggle(){
+    const btn=document.getElementById('apcFloorPlanToggle');
+    if(!btn || btn.dataset.wired) return;
+    btn.dataset.wired='1';
+    btn.addEventListener('click',()=>setFloorPlanHidden(!document.body.classList.contains('apc-floor-hidden')));
+  }
+
+  (function installFloorPlanToggleStyles(){
+    if(document.getElementById('apc-floor-toggle-style')) return;
+    const st=document.createElement('style');
+    st.id='apc-floor-toggle-style';
+    st.textContent=`
+      body.apc-floor-hidden #stage{background:#080b11!important}
+      body.apc-floor-hidden #apcLivePanel{
+        position:fixed!important;
+        left:50%!important;
+        top:50%!important;
+        right:auto!important;
+        transform:translate(-50%,-50%)!important;
+        width:min(920px,calc(100vw - 40px))!important;
+        max-width:calc(100vw - 40px)!important;
+        max-height:calc(100vh - 110px)!important;
+        z-index:999!important;
+      }
+      body.apc-floor-hidden #apcLivePanel .apc-list{max-height:calc(100vh - 450px)!important}
+      body.apc-floor-hidden #apcLivePanel .apc-title{font-size:28px!important}
+      body.apc-floor-hidden #apcLivePanel .apc-name{font-size:24px!important}
+      body.apc-floor-hidden #apcLivePanel .apc-rank{font-size:28px!important}
+      body.apc-floor-hidden #apcLivePanel .apc-num{font-size:20px!important}
+      body.apc-floor-hidden #apcLivePanel .apc-st{font-size:14px!important}
+      body.apc-floor-hidden #apcLivePanel .apc-kpi b{font-size:40px!important}
+      @media(max-width:760px){
+        body.apc-floor-hidden #apcLivePanel{width:calc(100vw - 20px)!important;max-width:calc(100vw - 20px)!important}
+      }
+    `;
+    document.head.appendChild(st);
+  })();
+'''
+          if 'FLOOR PLAN TOGGLE' not in s:
+              if mode_marker not in s:
+                  raise SystemExit('schedule marker not found')
+              s = s.replace(mode_marker, mode_code + '\n  ' + mode_marker, 1)
+
+          # Ensure the button is wired after the live panel exists, without changing existing sync behavior.
+          wire_marker = "  function start(){"
+          if wire_marker in s and 'wireFloorPlanToggle();' not in s:
+              s = s.replace(wire_marker, "  function start(){\n    wireFloorPlanToggle();", 1)
+
+          # Mutation observer keeps the button wired after panel creation/re-rendering.
+          observer_marker = "  const floorObserver=new MutationObserver(()=>wireFloorPlanTab());"
+          if observer_marker in s and 'wireFloorPlanToggle()' not in s[s.find(observer_marker):s.find(observer_marker)+250]:
+              s = s.replace(observer_marker, "  const floorObserver=new MutationObserver(()=>{wireFloorPlanTab(); wireFloorPlanToggle();});", 1)
+
+          if s != original:
+              p.write_text(s, encoding='utf-8')
+              print('Floor plan toggle added.')
+          else:
+              print('Floor plan toggle already present.')
+
+      - name: Commit changes if needed
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apc-office-sync.js
+          if git diff --cached --quiet; then
+            echo "No changes needed."
+            exit 0
+          fi
+          git commit -m "Add floor plan hide show toggle"
+          git push
