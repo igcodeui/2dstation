@@ -20,7 +20,7 @@
     if(document.getElementById('apc-live-style'))return;
     const style=document.createElement('style'); style.id='apc-live-style';
     style.textContent=`
-      #apcLivePanel{position:absolute;right:14px;top:14px;z-index:28;width:440px;max-width:calc(100vw - 28px);max-height:calc(100% - 28px);background:rgba(13,16,24,.95);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;backdrop-filter:blur(6px);overflow:hidden}
+      #apcLivePanel{position:absolute;right:14px;top:14px;z-index:28;width:500px;max-width:calc(100vw - 28px);max-height:calc(100% - 28px);background:rgba(13,16,24,.95);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;backdrop-filter:blur(6px);overflow:hidden}
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}\n      #apcLivePanel .apc-tab{flex:1;border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:8px 6px;font:800 9px/1.1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-tab:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-tab.on{color:#fff;border-color:#5b9cff;background:rgba(91,156,255,.16);box-shadow:inset 0 0 0 1px rgba(91,156,255,.18)}
       #apcLivePanel .apc-title{font-size:18px;font-weight:900;letter-spacing:2px;color:#5b9cff}
       #apcLivePanel .apc-tools{display:flex;align-items:center;gap:8px}\n      #apcLivePanel .apc-toggle{border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:5px 8px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-toggle:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-toggle.on{color:#5b9cff;border-color:rgba(91,156,255,.55);background:rgba(91,156,255,.12)}\n      #apcLivePanel .apc-sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;color:#8b94a7}
@@ -33,7 +33,7 @@
       #apcLivePanel .apc-date{padding:2px 14px 10px;color:#8b94a7;font-size:11px;font-weight:800;letter-spacing:.8px}
       #apcLivePanel .apc-list{padding:0 12px 14px;max-height:560px;overflow:auto}
       #apcLivePanel .apc-row{display:grid;grid-template-columns:46px 1fr 68px 82px;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid rgba(255,255,255,.045)}
-      #apcLivePanel .apc-row:first-child{border-top:0}.apc-rank{font-size:18px;font-weight:900;text-align:center;color:#8b94a7}.apc-row.top .apc-rank{color:#ffcf5a}
+      #apcLivePanel .apc-row:first-child{border-top:0}.apc-rank{font-size:18px;font-weight:900;text-align:center;color:#8b94a7}.apc-row.top .apc-rank{color:#ffcf5a}.apc-row.rank1{background:linear-gradient(90deg,rgba(255,207,90,.16),rgba(255,207,90,.06));border-left:4px solid #ffcf5a}.apc-row.rank2{background:linear-gradient(90deg,rgba(205,214,223,.13),rgba(205,214,223,.04));border-left:4px solid #cbd5e1}.apc-row.rank3{background:linear-gradient(90deg,rgba(205,130,76,.13),rgba(205,130,76,.04));border-left:4px solid #cd824c}.apc-row.rank1 .apc-rank{color:#ffcf5a}.apc-row.rank2 .apc-rank{color:#d8e0e8}.apc-row.rank3 .apc-rank{color:#e09a68}
       #apcLivePanel .apc-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:900}
       #apcLivePanel .apc-st{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;font-weight:800;letter-spacing:.7px;color:#8b94a7}#apcLivePanel .apc-st.abs{color:#ff5a5f}
       #apcLivePanel .apc-st i{width:8px;height:8px;border-radius:50%;display:inline-block;background:#4cd964}.apc-st.abs i{background:#ff5a5f}
@@ -253,7 +253,7 @@ function updateHeader(){
         : (' '+(abs?'ABSENT':'PRESENT')+score);
       const tr=rr?Number(row.total||0):Number(row.todayTransfers||0);
       const rev=rr?null:Number(row.todayRevenue||0);
-      return '<div class="apc-row '+(rank===1?'top':'')+'"><div class="apc-rank">#'+esc(rank||'—')+'</div><div><div class="apc-name">'+esc(row.name)+'</div><div class="apc-st '+(abs?'abs':'')+'"><i></i>'+esc(sub)+'</div></div><div class="apc-num">'+money(tr)+'<small>TR</small></div><div class="apc-num">'+(rev==null?'—':money(rev))+'<small>REV</small></div></div>';
+      return '<div class="apc-row '+(rank===1?'top rank1':rank===2?'rank2':rank===3?'rank3':'')+'"><div class="apc-rank">#'+esc(rank||'—')+'</div><div><div class="apc-name">'+esc(row.name)+'</div><div class="apc-st '+(abs?'abs':'')+'"><i></i>'+esc(sub)+'</div></div><div class="apc-num">'+money(tr)+'<small>TR</small></div><div class="apc-num">'+(rev==null?'—':money(rev))+'<small>REV</small></div></div>';
     }).join('');
   }
 
