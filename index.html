@@ -3038,7 +3038,8 @@ const Agents = (() => {
       sayT: 7 + r() * 16,
       spot: null, chatPartner: null, animT: r() * 10,
       plan: { coffee: null, lunch: null }, doneCoffee: false, doneLunch: false,
-      breakKind: null
+      breakKind: null,
+      hardworking: true
     };
   }
 
@@ -3325,6 +3326,23 @@ const Agents = (() => {
   function update(a, dt) {
     a.bubbleT = Math.max(0, a.bubbleT - dt);
 
+    // HARDWORKING MODE: keep every employee at their workstation.
+    // Breaks, away trips, meetings, stretches, chats and simulated
+    // offline states are disabled for the current office presentation.
+    if (a.hardworking) {
+      if (a.spot) { releaseSpot(a.spot); a.spot = null; }
+      a.path = null;
+      a.lerp = null;
+      a.bubbleT = 0;
+      a.bubbleMsg = null;
+      if (a.visible) {
+        a.state = 'WORKING';
+        a.sitting = true;
+        a.facing = a.seat.facing;
+      }
+      return;
+    }
+
     if (a.lerp) {
       a.lerp.t += dt;
       const k = Math.min(1, a.lerp.t / a.lerp.dur);
@@ -3436,6 +3454,16 @@ const Agents = (() => {
   /* ---------------- CEO ambient behavior ---------------- */
   function updateCEO(a, dt) {
     a.bubbleT = Math.max(0, a.bubbleT - dt);
+    if (a.hardworking) {
+      a.path = null;
+      a.lerp = null;
+      a.bubbleT = 0;
+      a.bubbleMsg = null;
+      a.state = 'WORKING';
+      a.sitting = true;
+      a.facing = a.seat.facing;
+      return;
+    }
     if (a.lerp) {
       a.lerp.t += dt;
       const k = Math.min(1, a.lerp.t / a.lerp.dur);
