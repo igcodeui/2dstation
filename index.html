@@ -3038,8 +3038,7 @@ const Agents = (() => {
       sayT: 7 + r() * 16,
       spot: null, chatPartner: null, animT: r() * 10,
       plan: { coffee: null, lunch: null }, doneCoffee: false, doneLunch: false,
-      breakKind: null,
-      hardworking: true
+      breakKind: null
     };
   }
 
@@ -3326,22 +3325,6 @@ const Agents = (() => {
   function update(a, dt) {
     a.bubbleT = Math.max(0, a.bubbleT - dt);
 
-    // HARDWORKING MODE: keep every employee at their workstation.
-    // Breaks, away trips, meetings, stretches, chats and simulated
-    // offline states are disabled for the current office presentation.
-    if (a.hardworking) {
-      if (a.spot) { releaseSpot(a.spot); a.spot = null; }
-      a.path = null;
-      a.lerp = null;
-      a.bubbleT = 0;
-      a.bubbleMsg = null;
-      if (a.visible) {
-        a.state = 'WORKING';
-        a.sitting = true;
-        a.facing = a.seat.facing;
-      }
-      return;
-    }
 
     if (a.lerp) {
       a.lerp.t += dt;
@@ -3352,6 +3335,13 @@ const Agents = (() => {
       return;
     }
     if (a.path) { stepPath(a, dt); return; }
+
+    // STATION SAFETY: never leave a working employee stranded on the floor.
+    // Once movement finishes, send them back to their assigned station and seat.
+    if (a.visible && a.state === 'WORKING' && !a.sitting && !a.path && !a.lerp) {
+      goSitAtDesk(a);
+      return;
+    }
 
     if (a.fading) {
       a.alpha += a.fading * dt * 2.2;
@@ -3454,16 +3444,6 @@ const Agents = (() => {
   /* ---------------- CEO ambient behavior ---------------- */
   function updateCEO(a, dt) {
     a.bubbleT = Math.max(0, a.bubbleT - dt);
-    if (a.hardworking) {
-      a.path = null;
-      a.lerp = null;
-      a.bubbleT = 0;
-      a.bubbleMsg = null;
-      a.state = 'WORKING';
-      a.sitting = true;
-      a.facing = a.seat.facing;
-      return;
-    }
     if (a.lerp) {
       a.lerp.t += dt;
       const k = Math.min(1, a.lerp.t / a.lerp.dur);
@@ -3473,6 +3453,13 @@ const Agents = (() => {
       return;
     }
     if (a.path) { stepPath(a, dt * 0.85); return; }
+    // STATION SAFETY: keep the CEO anchored to the assigned station when working.
+    if (a.state === 'WORKING' && !a.sitting && !a.path && !a.lerp) {
+      a.sitting = true;
+      a.pos.x = a.seat.x;
+      a.pos.y = a.seat.y;
+      a.facing = a.seat.facing;
+    }
     /* occasional executive pronouncements from the corner office */
     a.sayT -= dt;
     if (a.sayT <= 0 && a.visible) { say(a, 'CEO'); a.sayT = 22 + Math.random() * 26; }
