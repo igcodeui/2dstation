@@ -4729,17 +4729,30 @@ const Game = (() => {
     }
 
     let img, bob = 0;
+    let spriteX, spriteY, spriteW, spriteH;
     if (a.sitting) {
       const typing = (a.state === 'WORKING') && (Math.floor(gt * 2.2) % 2 === 1) ? 1 : 0;
       img = set['sit' + a.facing][typing];
-      ctx.drawImage(img, x - 18, y - 34, 36, 44);
+      spriteX = x - 18; spriteY = y - 34; spriteW = 36; spriteH = 44;
+      ctx.drawImage(img, spriteX, spriteY, spriteW, spriteH);
     } else {
       let f = 0;
       if (a.path) { f = (Math.floor(a.animT * 8) % 2) === 0 ? 1 : 2; if (f === 1) bob = -2; }
       img = set[a.facing][f];
       if (a.state === 'STRETCH' && Math.floor(gt * 2) % 2 === 0) bob = -2;
       if (a.state === 'WANDER' && !a.path && Math.floor(gt * 2) % 2 === 0) bob = -2;
-      ctx.drawImage(img, x - 18, y - 54 + bob, 36, 56);
+      spriteX = x - 18; spriteY = y - 54 + bob; spriteW = 36; spriteH = 56;
+      ctx.drawImage(img, spriteX, spriteY, spriteW, spriteH);
+    }
+
+    // Attendance feed: an agent marked ABSENT by the Agent Performance
+    // tracker stays visible at the workstation but is tinted red.
+    if (a.syncAbsent) {
+      ctx.save();
+      ctx.globalCompositeOperation = 'source-atop';
+      ctx.fillStyle = 'rgba(220,45,55,0.62)';
+      ctx.fillRect(spriteX, spriteY, spriteW, spriteH);
+      ctx.restore();
     }
 
     // chair back overlay for office chairs (sitters facing away from camera)
