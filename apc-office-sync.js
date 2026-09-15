@@ -26,21 +26,17 @@
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
-      /* HELPING HANDS: fit both leaderboard and buyers at normal monitor zoom */
-      #apcLivePanel.has-buyers{width:min(1120px,calc(100vw - 28px))!important;max-width:calc(100vw - 28px)!important;max-height:calc(100vh - 28px)!important;overflow:hidden!important;display:grid!important;grid-template-columns:minmax(0,1fr) 430px;grid-template-rows:auto auto auto auto minmax(0,1fr);column-gap:16px}
-      #apcLivePanel.has-buyers .apc-head{grid-column:1/-1}
-      #apcLivePanel.has-buyers .apc-tabs{grid-column:1/-1}
-      #apcLivePanel.has-buyers .apc-kpis{grid-column:1/-1}
-      #apcLivePanel.has-buyers .apc-date{grid-column:1;grid-row:4;width:auto!important;padding-left:18px}
-      #apcLivePanel.has-buyers .apc-schedule-btn{grid-column:1;grid-row:4;justify-self:end;width:auto!important;margin:0 18px 10px 0}
-      #apcLivePanel.has-buyers .apc-list{grid-column:1;grid-row:5;width:auto!important;max-height:none;min-height:0;overflow:hidden;padding:0 8px 12px 14px}
-      #apcLivePanel.has-buyers .apc-buyer-panel{grid-column:2;grid-row:4/6;position:static!important;width:auto!important;height:auto!important;max-height:none!important;margin:0 14px 12px 0!important;display:flex!important;flex-direction:column;overflow:hidden!important;min-width:0;align-self:stretch}
-      #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;padding:8px;max-height:none!important;overflow:hidden!important;align-content:start}
-      #apcLivePanel.has-buyers .apc-buyer-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:7px 8px;min-height:48px;height:48px;border:1px solid rgba(255,255,255,.06);border-radius:6px;margin:0;box-sizing:border-box;overflow:hidden}
-      #apcLivePanel.has-buyers .apc-buyer-name{font-size:13px;line-height:1.12;font-weight:900;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:12px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      #apcLivePanel.has-buyers .apc-buyer-status{font-size:12px;font-weight:900;white-space:nowrap;text-align:center}
-      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:10px 14px;flex:0 0 auto}
+      /* HELPING HANDS BUYERS — independent panel; never changes leaderboard width */
+      #apcLivePanel.has-buyers{width:620px!important;max-width:calc(100vw - 28px)!important;display:block!important;overflow:hidden!important}
+      #apcBuyerPanel.apc-buyer-floating{position:absolute;right:646px;top:14px;z-index:27;width:400px;max-height:calc(100% - 28px);background:rgba(13,16,24,.97);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;overflow:hidden}
+      #apcBuyerPanel.apc-buyer-floating .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;max-height:none;overflow:hidden}
+      #apcBuyerPanel.apc-buyer-floating .apc-buyer-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:8px;min-height:54px;border:1px solid rgba(255,255,255,.06);border-radius:7px;box-sizing:border-box;overflow:hidden}
+      #apcBuyerPanel.apc-buyer-floating .apc-buyer-name{font-size:15px;line-height:1.15;font-weight:900;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+      #apcBuyerPanel.apc-buyer-floating .apc-buyer-vertical{font-size:11px;line-height:1.15;color:#94a3b8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #apcBuyerPanel.apc-buyer-floating .apc-buyer-status{font-size:13px;font-weight:900;white-space:nowrap;text-align:center}
+      #apcBuyerPanel.apc-buyer-floating .apc-buyer-hd{font-size:15px;padding:11px 14px;font-weight:900;letter-spacing:1px;color:#5b9cff;border-bottom:1px solid #262d3a}
+      body.apc-floor-disabled #apcLivePanel{position:fixed!important;left:calc(50% + 206px)!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:620px!important;max-width:calc(100vw - 40px)!important;z-index:999!important}
+      body.apc-floor-disabled #apcBuyerPanel.apc-buyer-floating{position:fixed!important;left:calc(50% - 206px)!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:400px!important;z-index:998!important}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
       #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
       #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
@@ -154,10 +150,16 @@
     }
   }
   function ensurePanel(){
-    if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;
-    const p=document.createElement('div'); p.id='apcLivePanel';
-    p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcMinimize" class="apc-toggle">MINIMIZE</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div id="apcBuyerPanel" class="apc-buyer-panel" style="display:none"></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
-    stage.appendChild(p);
+    const stage=document.getElementById('stage'); if(!stage)return;
+    if(!document.getElementById('apcLivePanel')){
+      const p=document.createElement('div'); p.id='apcLivePanel';
+      p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcMinimize" class="apc-toggle">MINIMIZE</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
+      stage.appendChild(p);
+    }
+    if(!document.getElementById('apcBuyerPanel')){
+      const b=document.createElement('div'); b.id='apcBuyerPanel'; b.className='apc-buyer-panel apc-buyer-floating'; b.style.display='none';
+      stage.appendChild(b);
+    }
   }
   const SETTINGS_AGENTS=['Marnelie','Selyn','Edna','Angelo','Karen','Zarah','Gia','Cherylyn','Minjubail','Rea','Jhoana','Shanley','Normie','Angelica','Carnel','Maika','Arc','Frank','JD','Margarita','Lucie','Dominic','Alfredo Molina','Abbey'];
   const DEFAULT_BREAKS={};
@@ -453,6 +455,7 @@ function updateHeader(){
     function renderHelpingHandsBuyers(){
     const panel=document.getElementById('apcBuyerPanel');
     if(!panel)return;
+    panel.classList.add('apc-buyer-floating');
     if(state.source!=='apc'){panel.style.display='none';return;}
     const buyers=(state.data&&Array.isArray(state.data.buyers))?state.data.buyers:[];
     if(!buyers.length){panel.style.display='none';return;}
@@ -471,7 +474,10 @@ function updatePanel(){
     const p=document.getElementById('apcLivePanel'); if(!p)return;
     const good = state.source==='rr' ? !!state.rrData : state.source==='apc' ? !!state.data : (!!state.data||!!state.rrData);
     p.classList.toggle('offline',!good);
-    p.classList.toggle('has-buyers',state.source==='apc' && !!(state.data&&Array.isArray(state.data.buyers)&&state.data.buyers.length));
+    const hasHHBuyers=state.source==='apc' && !!(state.data&&Array.isArray(state.data.buyers)&&state.data.buyers.length);
+    p.classList.remove('has-buyers');
+    const buyerPanel=document.getElementById('apcBuyerPanel');
+    if(buyerPanel) buyerPanel.style.display=hasHHBuyers?'block':'none';
     const s=document.getElementById('apcSyncText'); if(s)s.textContent=good?'LIVE':'OFFLINE';
     p.querySelectorAll('.apc-tab').forEach(btn=>btn.classList.toggle('on',btn.dataset.source===state.source));
 
@@ -529,6 +535,16 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     const p=document.getElementById('apcLivePanel');
     if(!p)return;
     if(state.floorPlanDisabled){
+      const bp=document.getElementById('apcBuyerPanel');
+      if(bp){
+        bp.style.position='fixed';
+        bp.style.left='calc(50% - 206px)';
+        bp.style.right='auto';
+        bp.style.top='50%';
+        bp.style.transform='translate(-50%,-50%)';
+        bp.style.width='400px';
+        bp.style.zIndex='998';
+      }
       p.classList.remove('apc-minimized');
       p.style.position='fixed';
       p.style.left='50%';
@@ -539,6 +555,16 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
       p.style.maxWidth='calc(100vw - 40px)';
       p.style.zIndex='999';
     }else{
+      const bp=document.getElementById('apcBuyerPanel');
+      if(bp){
+        bp.style.position='absolute';
+        bp.style.left='';
+        bp.style.right='646px';
+        bp.style.top='14px';
+        bp.style.transform='';
+        bp.style.width='400px';
+        bp.style.zIndex='27';
+      }
       p.classList.remove('apc-minimized');
       p.style.position='absolute';
       p.style.left='';
@@ -560,7 +586,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     btn.addEventListener('click',()=>{
       const minimized=p.classList.toggle('apc-minimized');
       const buyerPanel=document.getElementById('apcBuyerPanel');
-      if(buyerPanel) buyerPanel.style.display=minimized?'none':'';
+      if(buyerPanel) buyerPanel.style.display=minimized?'none':(state.source==='apc'&&state.data&&Array.isArray(state.data.buyers)&&state.data.buyers.length?'block':'none');
       btn.textContent=minimized?'RESTORE':'MINIMIZE';
       btn.classList.toggle('on',minimized);
       if(state.floorPlanDisabled && minimized){
