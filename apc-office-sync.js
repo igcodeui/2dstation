@@ -127,6 +127,9 @@
       tvStyle.id = 'apc-tv-readable-style';
       tvStyle.textContent = `
         #apcLivePanel { width: 620px !important; }
+        #apcLivePanel.has-buyers { width: min(1120px, calc(100vw - 28px)) !important; max-width: calc(100vw - 28px) !important; }
+        #apcLivePanel.has-buyers .apc-list { width: calc(100% - 446px) !important; overflow:hidden !important; }
+        #apcLivePanel.has-buyers .apc-buyer-panel { width: 420px !important; overflow:hidden !important; }
         #apcLivePanel .apc-head { padding: 20px 22px 16px !important; }
         #apcLivePanel .apc-title { font-size: 21px !important; }
         #apcLivePanel .apc-tabs { gap: 8px !important; padding: 12px 16px !important; }
