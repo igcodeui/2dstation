@@ -64,7 +64,16 @@
       body.apc-floor-disabled #apcLivePanel .apc-rank{font-size:28px!important}
       body.apc-floor-disabled #apcLivePanel .apc-num{font-size:20px!important}
       #apcLivePanel .apc-title{font-size:24px;font-weight:900;letter-spacing:2px;color:#5b9cff}
-      #apcLivePanel .apc-tools{display:flex;align-items:center;gap:8px}\n      #apcLivePanel .apc-toggle{border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:5px 8px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-toggle:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-toggle.on{color:#5b9cff;border-color:rgba(91,156,255,.55);background:rgba(91,156,255,.12)}\n      #apcLivePanel .apc-sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;color:#8b94a7}
+      #apcLivePanel .apc-tools{display:flex;align-items:center;gap:8px}\n      #apcLivePanel .apc-toggle{border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:5px 8px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-toggle:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-toggle.on{color:#5b9cff;border-color:rgba(91,156,255,.55);background:rgba(91,156,255,.12)}
+      #apcLivePanel.apc-minimized{width:auto!important;max-width:none!important;overflow:visible!important}
+      #apcLivePanel.apc-minimized .apc-title,
+      #apcLivePanel.apc-minimized .apc-tabs,
+      #apcLivePanel.apc-minimized .apc-kpis,
+      #apcLivePanel.apc-minimized .apc-date,
+      #apcLivePanel.apc-minimized .apc-schedule-btn,
+      #apcLivePanel.apc-minimized .apc-list{display:none!important}
+      #apcLivePanel.apc-minimized .apc-head{border-bottom:0!important;padding:10px 12px!important}
+      #apcLivePanel.apc-minimized .apc-sync{display:none!important}\n      #apcLivePanel .apc-sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;color:#8b94a7}
       #apcLivePanel .apc-dot{width:10px;height:10px;border-radius:50%;background:#4cd964;box-shadow:0 0 7px rgba(76,217,100,.55)}
       #apcLivePanel.offline .apc-dot{background:#ffb340;box-shadow:none}
       #apcLivePanel .apc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 18px}
@@ -116,7 +125,7 @@
   function ensurePanel(){
     if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;
     const p=document.createElement('div'); p.id='apcLivePanel';
-    p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
+    p.innerHTML='<div class="apc-head"><div class="apc-title">LIVE PERFORMANCE CENTER</div><div class="apc-tools"><button id="apcMinimize" class="apc-toggle">MINIMIZE</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync"><i class="apc-dot"></i><span id="apcSyncText">CONNECTING</span></div></div></div><div class="apc-tabs"><button class="apc-tab on" data-source="all">ALL</button><button class="apc-tab" data-source="apc">HELPING HANDS</button><button class="apc-tab" data-source="rr">RAPID RELIEF</button></div><div class="apc-kpis"><div class="apc-kpi"><b id="apcTransfers">0</b><span>TRANSFERS</span></div><div class="apc-kpi"><b id="apcRevenue">0</b><span>REVENUE</span></div><div class="apc-kpi"><b id="apcPresent">0</b><span>PRESENT</span></div></div><div class="apc-date" id="apcDate">WAITING FOR SHEETS…</div><button class="apc-schedule-btn" id="apcScheduleBtn">BREAK SCHEDULE &amp; WORK LOCATION</button><div class="apc-list" id="apcList"></div>';
     stage.appendChild(p);
   }
   const SETTINGS_AGENTS=['Marnelie','Selyn','Edna','Angelo','Karen','Zarah','Gia','Cherylyn','Minjubail','Rea','Jhoana','Shanley','Normie','Angelica','Carnel','Maika','Arc','Frank','JD','Margarita','Lucie','Dominic','Alfredo Molina','Abbey'];
@@ -434,6 +443,26 @@ function updateHeader(){
 
 function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScreen!=='function')return;const seen=new Set();[...state.mapped,...state.rrMapped].forEach(({office:a})=>{if(seen.has(a))return;seen.add(a);const el=document.querySelector('.apc-agent-badge[data-pc="'+CSS.escape(a.pc)+'"]');if(!el||!a.visible||!state.badgesVisible){if(el)el.style.display='none';return;}const p=Game.worldToScreen(a.pos.x,a.pos.y-(a.sitting?58:72));el.style.display='';el.style.left=Math.round(p.x)+'px';el.style.top=Math.round(p.y)+'px';});}
   function refreshBadges(){[...state.mapped,...state.rrMapped].forEach(({office:a,row})=>{const el=document.querySelector('.apc-agent-badge[data-pc="'+CSS.escape(a.pc)+'"]');if(!el)return;el.classList.toggle('top',Number(row.rank||row.buyerRank)===1);el.classList.toggle('abs',normalizeStatus(row)==='ABSENT');});}
+  function setupMinimizeToggle(){
+    const btn=document.getElementById('apcMinimize');
+    const p=document.getElementById('apcLivePanel');
+    if(!btn||!p||btn.dataset.bound==='1')return;
+    btn.dataset.bound='1';
+    btn.addEventListener('click',()=>{
+      const minimized=p.classList.toggle('apc-minimized');
+      btn.textContent=minimized?'RESTORE':'MINIMIZE';
+      btn.classList.toggle('on',minimized);
+      if(state.floorPlanDisabled && minimized){
+        // Keep a small control accessible while in centered TV mode so Settings can be opened.
+        p.style.width='auto';
+      } else if(state.floorPlanDisabled){
+        p.style.width='min(920px,calc(100vw - 40px))';
+      } else {
+        p.style.width='620px';
+      }
+    });
+  }
+
   function setupBadgeToggle(){const btn=document.getElementById('apcToggleBadges');if(!btn||btn.dataset.bound==='1')return;btn.dataset.bound='1';btn.addEventListener('click',()=>{state.badgesVisible=!state.badgesVisible;btn.classList.toggle('on',state.badgesVisible);btn.textContent=state.badgesVisible?'HIDE LABELS':'SHOW LABELS';positionBadges();});}
 
   function loadJSONP(url){
@@ -479,7 +508,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     });
   }
 
-  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();loadFloorPlanDisabled();setTimeout(()=>{setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
+  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();loadFloorPlanDisabled();setTimeout(()=>{setupMinimizeToggle();setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
 
   function loop(){positionBadges();refreshBadges();requestAnimationFrame(loop)}
 
