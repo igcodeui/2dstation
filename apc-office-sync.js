@@ -22,7 +22,7 @@
     if(document.getElementById('apc-live-style'))return;
     const style=document.createElement('style'); style.id='apc-live-style';
     style.textContent=`
-      #apcLivePanel{position:absolute;right:14px;top:14px;z-index:28;width:720px;max-width:calc(100vw - 28px);max-height:calc(100% - 28px);background:rgba(13,16,24,.95);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;backdrop-filter:blur(6px);overflow:hidden}
+      #apcLivePanel{position:absolute;right:14px;top:14px;z-index:28;width:620px;max-width:calc(100vw - 28px);max-height:calc(100% - 28px);background:rgba(13,16,24,.95);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;backdrop-filter:blur(6px);overflow:hidden}
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
@@ -89,22 +89,22 @@
       const tvStyle = document.createElement('style');
       tvStyle.id = 'apc-tv-readable-style';
       tvStyle.textContent = `
-        #apcLivePanel { width: 720px !important; }
+        #apcLivePanel { width: 620px !important; }
         #apcLivePanel .apc-head { padding: 20px 22px 16px !important; }
-        #apcLivePanel .apc-title { font-size: 24px !important; }
+        #apcLivePanel .apc-title { font-size: 21px !important; }
         #apcLivePanel .apc-tabs { gap: 8px !important; padding: 12px 16px !important; }
         #apcLivePanel .apc-tab { padding: 10px 8px !important; font-size: 11px !important; }
         #apcLivePanel .apc-kpis { gap: 12px !important; padding: 16px 18px !important; }
         #apcLivePanel .apc-kpi { padding: 16px 10px !important; }
-        #apcLivePanel .apc-kpi b { font-size: 34px !important; }
+        #apcLivePanel .apc-kpi b { font-size: 30px !important; }
         #apcLivePanel .apc-kpi span { font-size: 13px !important; }
         #apcLivePanel .apc-date { padding: 4px 18px 12px !important; font-size: 13px !important; }
         #apcLivePanel .apc-list { padding: 0 16px 18px !important; max-height: 680px !important; }
         #apcLivePanel .apc-row { grid-template-columns: 58px 1fr 90px 108px !important; gap: 12px !important; padding: 15px 10px !important; }
         #apcLivePanel .apc-rank { font-size: 24px !important; }
-        #apcLivePanel .apc-name { font-size: 21px !important; }
+        #apcLivePanel .apc-name { font-size: 19px !important; }
         #apcLivePanel .apc-st { margin-top: 5px !important; font-size: 13px !important; }
-        #apcLivePanel .apc-num { font-size: 18px !important; }
+        #apcLivePanel .apc-num { font-size: 17px !important; }
         #apcLivePanel .apc-num small { font-size: 12px !important; }
         @media (max-width: 760px) {
           #apcLivePanel { width: calc(100vw - 24px) !important; }
