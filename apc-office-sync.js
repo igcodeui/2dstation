@@ -174,14 +174,7 @@
     [world,vignette,info,tooltip].forEach(el=>{if(el){el.style.visibility=state.floorPlanDisabled?'hidden':'';el.style.pointerEvents=state.floorPlanDisabled?'none':'';}});
     const panel=document.getElementById('apcLivePanel');
     if(panel){
-      panel.style.position=state.floorPlanDisabled?'fixed':'absolute';
-      panel.style.left=state.floorPlanDisabled?'50%':'';
-      panel.style.right=state.floorPlanDisabled?'auto':'14px';
-      panel.style.top=state.floorPlanDisabled?'50%':'14px';
-      panel.style.transform=state.floorPlanDisabled?'translate(-50%,-50%)':'';
-      panel.style.width=state.floorPlanDisabled?'min(920px,calc(100vw - 40px))':'720px';
-      panel.style.maxWidth=state.floorPlanDisabled?'calc(100vw - 40px)':'calc(100vw - 28px)';
-      panel.style.zIndex=state.floorPlanDisabled?'999':'28';
+      restoreLeaderboardPlacement();
     }
     const toggle=document.getElementById('apcFloorDisabled');
     if(toggle) toggle.checked=state.floorPlanDisabled;
@@ -189,6 +182,7 @@
   function loadFloorPlanDisabled(){
     try{state.floorPlanDisabled=localStorage.getItem('apcFloorPlanDisabled')==='1';}catch(_){state.floorPlanDisabled=false;}
     setFloorPlanDisabled(state.floorPlanDisabled);
+    restoreLeaderboardPlacement();
   }
   function openOfficeSettings(){ensureScheduleModal();renderOfficeSettings();}
   async function saveOfficeSettings(){
@@ -443,6 +437,33 @@ function updateHeader(){
 
 function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScreen!=='function')return;const seen=new Set();[...state.mapped,...state.rrMapped].forEach(({office:a})=>{if(seen.has(a))return;seen.add(a);const el=document.querySelector('.apc-agent-badge[data-pc="'+CSS.escape(a.pc)+'"]');if(!el||!a.visible||!state.badgesVisible){if(el)el.style.display='none';return;}const p=Game.worldToScreen(a.pos.x,a.pos.y-(a.sitting?58:72));el.style.display='';el.style.left=Math.round(p.x)+'px';el.style.top=Math.round(p.y)+'px';});}
   function refreshBadges(){[...state.mapped,...state.rrMapped].forEach(({office:a,row})=>{const el=document.querySelector('.apc-agent-badge[data-pc="'+CSS.escape(a.pc)+'"]');if(!el)return;el.classList.toggle('top',Number(row.rank||row.buyerRank)===1);el.classList.toggle('abs',normalizeStatus(row)==='ABSENT');});}
+  function restoreLeaderboardPlacement(){
+    const p=document.getElementById('apcLivePanel');
+    if(!p)return;
+    if(state.floorPlanDisabled){
+      p.classList.remove('apc-minimized');
+      p.style.position='fixed';
+      p.style.left='50%';
+      p.style.right='auto';
+      p.style.top='50%';
+      p.style.transform='translate(-50%,-50%)';
+      p.style.width='min(920px,calc(100vw - 40px))';
+      p.style.maxWidth='calc(100vw - 40px)';
+      p.style.zIndex='999';
+    }else{
+      p.classList.remove('apc-minimized');
+      p.style.position='absolute';
+      p.style.left='';
+      p.style.right='14px';
+      p.style.top='14px';
+      p.style.bottom='';
+      p.style.transform='';
+      p.style.width='620px';
+      p.style.maxWidth='calc(100vw - 28px)';
+      p.style.zIndex='28';
+    }
+  }
+
   function setupMinimizeToggle(){
     const btn=document.getElementById('apcMinimize');
     const p=document.getElementById('apcLivePanel');
@@ -508,7 +529,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     });
   }
 
-  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();loadFloorPlanDisabled();setTimeout(()=>{setupMinimizeToggle();setupBadgeToggle();setupSourceTabs();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
+  function start(){if(state.started)return;state.started=true;ensureStyles();ensurePanel();loadFloorPlanDisabled();setTimeout(()=>{setupMinimizeToggle();setupBadgeToggle();setupSourceTabs();restoreLeaderboardPlacement();refresh();state.timer=setInterval(refresh,POLL_MS);requestAnimationFrame(loop)},500);}
 
   function loop(){positionBadges();refreshBadges();requestAnimationFrame(loop)}
 
