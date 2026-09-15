@@ -447,7 +447,7 @@ function updateHeader(){
       const live=calc.live;
       const status=live?'LIVE':'CLOSED';
       const msg=calc.message || b.message || '';
-      return '<div class="apc-buyer-row"><div><div class="apc-buyer-name">'+esc(b.name||b.buyer||'')+'</div><div class="apc-buyer-vertical">'+esc(b.vertical||'')+'</div></div><div class="apc-buyer-vertical">'+esc(b.hours||'')+'<div style="font-size:10px;margin-top:2px;color:#6f7b8e">'+esc(msg)+'</div></div><div class="apc-buyer-status '+(live?'live':'closed')+'">● '+status+'</div></div>';
+      return '<div class="apc-buyer-row"><div><div class="apc-buyer-name">'+esc(b.name||b.buyer||'')+'</div><div class="apc-buyer-vertical">'+esc(b.vertical||'')+'</div></div><div class="apc-buyer-vertical">'+esc(b.hours||'')+'<div style="font-size:12px;margin-top:2px;color:#6f7b8e">'+esc(msg)+'</div></div><div class="apc-buyer-status '+(live?'live':'closed')+'">● '+status+'</div></div>';
     }).join('');
     panel.innerHTML='<div class="apc-buyer-hd">AVAILABLE BUYERS · PACIFIC TIME</div><div class="apc-buyer-list">'+(rows||'<div class="apc-buyer-empty">No buyer availability data</div>')+'</div>';
   }
