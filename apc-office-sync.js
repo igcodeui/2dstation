@@ -26,21 +26,21 @@
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
-      /* HELPING HANDS: clean, unified two-column layout */
+      /* HELPING HANDS: fit both leaderboard and buyers at normal monitor zoom */
       #apcLivePanel.has-buyers{width:min(1120px,calc(100vw - 28px))!important;max-width:calc(100vw - 28px)!important;max-height:calc(100vh - 28px)!important;overflow:hidden!important;display:grid!important;grid-template-columns:minmax(0,1fr) 430px;grid-template-rows:auto auto auto auto minmax(0,1fr);column-gap:16px}
       #apcLivePanel.has-buyers .apc-head{grid-column:1/-1}
       #apcLivePanel.has-buyers .apc-tabs{grid-column:1/-1}
       #apcLivePanel.has-buyers .apc-kpis{grid-column:1/-1}
       #apcLivePanel.has-buyers .apc-date{grid-column:1;grid-row:4;width:auto!important;padding-left:18px}
       #apcLivePanel.has-buyers .apc-schedule-btn{grid-column:1;grid-row:4;justify-self:end;width:auto!important;margin:0 18px 10px 0}
-      #apcLivePanel.has-buyers .apc-list{grid-column:1;grid-row:5;width:auto!important;max-height:520px;overflow:auto;padding:0 8px 14px 14px}
-      #apcLivePanel.has-buyers .apc-buyer-panel{grid-column:2;grid-row:4/6;position:static!important;width:auto!important;height:auto!important;max-height:none!important;margin:0 14px 14px 0!important;display:flex!important;flex-direction:column;overflow:hidden!important;min-width:0}
-      #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr;gap:6px;padding:8px;max-height:none!important;overflow:visible!important}
-      #apcLivePanel.has-buyers .apc-buyer-row{display:grid;grid-template-columns:minmax(0,1fr) 78px;gap:10px;align-items:center;padding:8px 10px;min-height:50px;border:1px solid rgba(255,255,255,.06);border-radius:7px;margin:0;box-sizing:border-box}
-      #apcLivePanel.has-buyers .apc-buyer-name{font-size:15px;line-height:1.2;font-weight:900;white-space:normal;overflow-wrap:anywhere}
-      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:11px;line-height:1.15;white-space:normal}
-      #apcLivePanel.has-buyers .apc-buyer-status{font-size:13px;font-weight:900;white-space:nowrap;text-align:center}
-      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:16px 18px;flex:0 0 auto}
+      #apcLivePanel.has-buyers .apc-list{grid-column:1;grid-row:5;width:auto!important;max-height:none;min-height:0;overflow:hidden;padding:0 8px 12px 14px}
+      #apcLivePanel.has-buyers .apc-buyer-panel{grid-column:2;grid-row:4/6;position:static!important;width:auto!important;height:auto!important;max-height:none!important;margin:0 14px 12px 0!important;display:flex!important;flex-direction:column;overflow:hidden!important;min-width:0;align-self:stretch}
+      #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;padding:8px;max-height:none!important;overflow:hidden!important;align-content:start}
+      #apcLivePanel.has-buyers .apc-buyer-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:7px 8px;min-height:48px;height:48px;border:1px solid rgba(255,255,255,.06);border-radius:6px;margin:0;box-sizing:border-box;overflow:hidden}
+      #apcLivePanel.has-buyers .apc-buyer-name{font-size:13px;line-height:1.12;font-weight:900;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:10px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #apcLivePanel.has-buyers .apc-buyer-status{font-size:12px;font-weight:900;white-space:nowrap;text-align:center}
+      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:10px 14px;flex:0 0 auto}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
       #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
       #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
@@ -83,7 +83,7 @@
       body.apc-floor-disabled #infoPanel,
       body.apc-floor-disabled #tooltip{visibility:hidden!important;pointer-events:none!important}
       body.apc-floor-disabled #apcLivePanel{position:fixed!important;left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(1180px,calc(100vw - 40px))!important;max-width:calc(100vw - 40px)!important;max-height:calc(100vh - 40px)!important;z-index:999!important}
-      body.apc-floor-disabled #apcLivePanel.has-buyers{grid-template-columns:minmax(680px,1fr) 420px}
+      body.apc-floor-disabled #apcLivePanel.has-buyers{grid-template-columns:minmax(0,1fr) 430px;max-height:calc(100vh - 40px)!important}
       body.apc-floor-disabled #apcLivePanel .apc-list{max-height:none!important}
       body.apc-floor-disabled #apcLivePanel .apc-title{font-size:28px!important}
       body.apc-floor-disabled #apcLivePanel .apc-name{font-size:24px!important}
