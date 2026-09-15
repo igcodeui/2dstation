@@ -63,6 +63,34 @@
       .apc-agent-badge.top{border-color:rgba(255,207,90,.78);box-shadow:0 0 14px rgba(255,207,90,.18),0 5px 12px rgba(0,0,0,.35)}.apc-agent-badge.top .r{color:#ffcf5a}.apc-agent-badge.abs{opacity:.6;border-color:rgba(123,132,148,.45)}
       @media(max-width:760px){#apcLivePanel{width:calc(100vw - 24px);right:12px;top:12px}#apcLivePanel .apc-list{max-height:46vh}#apcLivePanel .apc-title{font-size:14px}#apcLivePanel .apc-row{grid-template-columns:34px 1fr 54px 64px}.apc-agent-badge{display:none}}
     `; document.head.appendChild(style);
+    // TV DISPLAY OVERRIDE: make the live leaderboard easy to read from a distance.
+    if (!document.getElementById('apc-tv-readable-style')) {
+      const tvStyle = document.createElement('style');
+      tvStyle.id = 'apc-tv-readable-style';
+      tvStyle.textContent = `
+        #apcLivePanel { width: 720px !important; }
+        #apcLivePanel .apc-head { padding: 20px 22px 16px !important; }
+        #apcLivePanel .apc-title { font-size: 24px !important; }
+        #apcLivePanel .apc-tabs { gap: 8px !important; padding: 12px 16px !important; }
+        #apcLivePanel .apc-tab { padding: 10px 8px !important; font-size: 11px !important; }
+        #apcLivePanel .apc-kpis { gap: 12px !important; padding: 16px 18px !important; }
+        #apcLivePanel .apc-kpi { padding: 16px 10px !important; }
+        #apcLivePanel .apc-kpi b { font-size: 34px !important; }
+        #apcLivePanel .apc-kpi span { font-size: 13px !important; }
+        #apcLivePanel .apc-date { padding: 4px 18px 12px !important; font-size: 13px !important; }
+        #apcLivePanel .apc-list { padding: 0 16px 18px !important; max-height: 680px !important; }
+        #apcLivePanel .apc-row { grid-template-columns: 58px 1fr 90px 108px !important; gap: 12px !important; padding: 15px 10px !important; }
+        #apcLivePanel .apc-rank { font-size: 24px !important; }
+        #apcLivePanel .apc-name { font-size: 21px !important; }
+        #apcLivePanel .apc-st { margin-top: 5px !important; font-size: 13px !important; }
+        #apcLivePanel .apc-num { font-size: 18px !important; }
+        #apcLivePanel .apc-num small { font-size: 12px !important; }
+        @media (max-width: 760px) {
+          #apcLivePanel { width: calc(100vw - 24px) !important; }
+        }
+      `;
+      document.head.appendChild(tvStyle);
+    }
   }
   function ensurePanel(){
     if(document.getElementById('apcLivePanel'))return; const stage=document.getElementById('stage'); if(!stage)return;
