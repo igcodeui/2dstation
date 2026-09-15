@@ -38,7 +38,7 @@
       #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;padding:8px;max-height:none!important;overflow:hidden!important;align-content:start}
       #apcLivePanel.has-buyers .apc-buyer-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;padding:7px 8px;min-height:48px;height:48px;border:1px solid rgba(255,255,255,.06);border-radius:6px;margin:0;box-sizing:border-box;overflow:hidden}
       #apcLivePanel.has-buyers .apc-buyer-name{font-size:13px;line-height:1.12;font-weight:900;white-space:normal;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:10px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:12px;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       #apcLivePanel.has-buyers .apc-buyer-status{font-size:12px;font-weight:900;white-space:nowrap;text-align:center}
       #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:10px 14px;flex:0 0 auto}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
