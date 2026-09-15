@@ -1,0 +1,50 @@
+// REPLACE ONLY YOUR EXISTING doGet() WITH THIS VERSION.
+// Keep your existing get2DOfficeData_() function unchanged.
+
+function doGet(e) {
+  const params = (e && e.parameter) ? e.parameter : {};
+
+  if (params.api === 'office') {
+    try {
+      const data = get2DOfficeData_();
+      const callback = String(params.callback || '').trim();
+
+      // JSONP is used by the public GitHub Pages office so the browser
+      // can read the Apps Script data without a CORS/proxy dependency.
+      if (callback && /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) {
+        return ContentService
+          .createTextOutput(callback + '(' + JSON.stringify(data) + ');')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+
+      // Direct browser/API test: /exec?api=office
+      return ContentService
+        .createTextOutput(JSON.stringify(data))
+        .setMimeType(ContentService.MimeType.JSON);
+
+    } catch (err) {
+      const errorData = {
+        success: false,
+        error: String(err && err.message ? err.message : err)
+      };
+
+      const callback = String(params.callback || '').trim();
+
+      if (callback && /^[A-Za-z_$][0-9A-Za-z_$]*$/.test(callback)) {
+        return ContentService
+          .createTextOutput(callback + '(' + JSON.stringify(errorData) + ');')
+          .setMimeType(ContentService.MimeType.JAVASCRIPT);
+      }
+
+      return ContentService
+        .createTextOutput(JSON.stringify(errorData))
+        .setMimeType(ContentService.MimeType.JSON);
+    }
+  }
+
+  // Keep the existing Pacific Time clock as the normal web-app page.
+  return HtmlService
+    .createHtmlOutput(getClockHtml())
+    .setTitle('Agent Performance Center Clock')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
