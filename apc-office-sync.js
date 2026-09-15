@@ -29,14 +29,16 @@
       #apcLivePanel.has-buyers{width:1040px!important;max-width:calc(100vw - 24px)!important}
       #apcLivePanel.has-buyers .apc-buyer-panel{position:absolute;right:14px;top:150px;width:410px;height:auto;max-height:none;margin:0;display:block!important}
       #apcLivePanel.has-buyers .apc-buyer-list{max-height:none;overflow:visible}
-      #apcLivePanel.has-buyers .apc-buyer-row{padding:8px 10px;font-size:15px;grid-template-columns:1fr 105px 98px;gap:8px}
-      #apcLivePanel.has-buyers .apc-buyer-name{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:13px}
-      #apcLivePanel.has-buyers .apc-buyer-status{font-size:15px}
-      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:16px;padding:16px 18px}
-      #apcLivePanel.has-buyers .apc-list{width:calc(100% - 440px);max-height:680px}
-      #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 440px)}
-      #apcLivePanel.has-buyers .apc-date{width:calc(100% - 440px)}
+      #apcLivePanel.has-buyers .apc-buyer-row{padding:9px 10px;font-size:17px;grid-template-columns:1fr 110px 105px;gap:8px;min-height:58px}
+      #apcLivePanel.has-buyers .apc-buyer-name{font-size:19px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+      #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:15px}
+      #apcLivePanel.has-buyers .apc-buyer-status{font-size:17px;font-weight:900;white-space:nowrap}
+      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:18px;padding:13px 14px}
+      #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:0 8px;max-height:none;overflow:visible}
+      #apcLivePanel.has-buyers .apc-buyer-row{border:1px solid rgba(255,255,255,.05);border-radius:6px;margin-bottom:6px}
+      #apcLivePanel.has-buyers .apc-list{width:calc(100% - 470px);max-height:680px}
+      #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 470px)}
+      #apcLivePanel.has-buyers .apc-date{width:calc(100% - 470px)}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
       #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
       #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
@@ -93,6 +95,8 @@
       #apcLivePanel.apc-minimized .apc-date,
       #apcLivePanel.apc-minimized .apc-schedule-btn,
       #apcLivePanel.apc-minimized .apc-list{display:none!important}
+      #apcLivePanel.apc-minimized .apc-buyer-panel{display:none!important}
+
       #apcLivePanel.apc-minimized .apc-head{border-bottom:0!important;padding:10px 12px!important}
       #apcLivePanel.apc-minimized .apc-sync{display:none!important}\n      #apcLivePanel .apc-sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;color:#8b94a7}
       #apcLivePanel .apc-dot{width:10px;height:10px;border-radius:50%;background:#4cd964;box-shadow:0 0 7px rgba(76,217,100,.55)}
@@ -549,6 +553,8 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
     btn.dataset.bound='1';
     btn.addEventListener('click',()=>{
       const minimized=p.classList.toggle('apc-minimized');
+      const buyerPanel=document.getElementById('apcBuyerPanel');
+      if(buyerPanel) buyerPanel.style.display=minimized?'none':'';
       btn.textContent=minimized?'RESTORE':'MINIMIZE';
       btn.classList.toggle('on',minimized);
       if(state.floorPlanDisabled && minimized){
