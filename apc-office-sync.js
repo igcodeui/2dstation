@@ -26,17 +26,22 @@
       #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
-      #apcLivePanel.has-buyers{width:min(1060px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px)!important;max-height:none!important;overflow:visible!important}
-      #apcLivePanel.has-buyers .apc-buyer-panel{position:absolute;right:12px;top:148px;width:400px;height:auto;max-height:none;margin:0;display:block!important;overflow:visible!important}
-      #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:7px 8px;max-height:none;overflow:visible}
-      #apcLivePanel.has-buyers .apc-buyer-row{padding:8px 9px;font-size:14px;grid-template-columns:minmax(0,1fr) 88px;gap:6px;min-height:54px;border:1px solid rgba(255,255,255,.06);border-radius:6px;margin:0;align-items:center}
+      /* HELPING HANDS: clean two-column layout — leaderboard left, buyers right */
+      #apcLivePanel.has-buyers{width:min(1180px,calc(100vw - 24px))!important;max-width:calc(100vw - 24px)!important;max-height:calc(100vh - 24px)!important;overflow:hidden!important;display:grid!important;grid-template-columns:minmax(680px,1fr) 420px;grid-template-rows:auto auto auto auto auto minmax(0,1fr);column-gap:14px}
+      #apcLivePanel.has-buyers .apc-head{grid-column:1/-1}
+      #apcLivePanel.has-buyers .apc-tabs{grid-column:1/-1}
+      #apcLivePanel.has-buyers .apc-kpis{grid-column:1/-1}
+      #apcLivePanel.has-buyers .apc-date{grid-column:1;grid-row:4;width:auto!important}
+      #apcLivePanel.has-buyers .apc-schedule-btn{grid-column:1;grid-row:5;width:auto!important}
+      #apcLivePanel.has-buyers .apc-list{grid-column:1;grid-row:6;width:auto!important;max-height:none;min-height:0;overflow:auto}
+      #apcLivePanel.has-buyers .apc-buyer-panel{grid-column:2;grid-row:4/7;position:static!important;width:auto!important;height:auto!important;max-height:none!important;margin:0 10px 14px 0!important;display:block!important;overflow:hidden!important;align-self:stretch}
+      #apcLivePanel.has-buyers .apc-buyer-list{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px;max-height:none!important;overflow:visible!important;padding:8px}
+      #apcLivePanel.has-buyers .apc-buyer-row{padding:8px 8px;font-size:14px;grid-template-columns:minmax(0,1fr) auto;gap:7px;min-height:54px;border:1px solid rgba(255,255,255,.06);border-radius:6px;margin:0;align-items:center}
       #apcLivePanel.has-buyers .apc-buyer-name{font-size:15px;line-height:1.15;white-space:normal;overflow:visible;text-overflow:clip}
       #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:11px;line-height:1.15}
-      #apcLivePanel.has-buyers .apc-buyer-status{font-size:18px;font-weight:900;white-space:nowrap}
+      #apcLivePanel.has-buyers .apc-buyer-status{font-size:14px;font-weight:900;white-space:nowrap}
       #apcLivePanel.has-buyers .apc-buyer-hd{font-size:15px;padding:11px 14px}
-      #apcLivePanel.has-buyers .apc-list{width:calc(100% - 430px);max-height:680px;overflow:auto}
-      #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 430px)}
-      #apcLivePanel.has-buyers .apc-date{width:calc(100% - 430px)}
+      #apcLivePanel.has-buyers .apc-list .apc-row{grid-template-columns:64px minmax(0,1fr) 90px 108px;gap:12px;padding:15px 10px}
       #apcLivePanel .apc-buyer-panel{margin:0 16px 16px;border:1px solid #262d3a;border-radius:10px;background:#101620;overflow:hidden}
       #apcLivePanel .apc-buyer-hd{padding:10px 12px;font-size:12px;font-weight:900;letter-spacing:1.1px;color:#5b9cff;border-bottom:1px solid #262d3a}
       #apcLivePanel .apc-buyer-list{display:grid;grid-template-columns:1fr;max-height:220px;overflow:auto}
@@ -78,7 +83,8 @@
       body.apc-floor-disabled #stageVignette,
       body.apc-floor-disabled #infoPanel,
       body.apc-floor-disabled #tooltip{visibility:hidden!important;pointer-events:none!important}
-      body.apc-floor-disabled #apcLivePanel{position:fixed!important;left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(920px,calc(100vw - 40px))!important;max-width:calc(100vw - 40px)!important;max-height:calc(100vh - 40px)!important;z-index:999!important}
+      body.apc-floor-disabled #apcLivePanel{position:fixed!important;left:50%!important;right:auto!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(1180px,calc(100vw - 40px))!important;max-width:calc(100vw - 40px)!important;max-height:calc(100vh - 40px)!important;z-index:999!important}
+      body.apc-floor-disabled #apcLivePanel.has-buyers{grid-template-columns:minmax(680px,1fr) 420px}
       body.apc-floor-disabled #apcLivePanel .apc-list{max-height:none!important}
       body.apc-floor-disabled #apcLivePanel .apc-title{font-size:28px!important}
       body.apc-floor-disabled #apcLivePanel .apc-name{font-size:24px!important}
@@ -561,7 +567,7 @@ function positionBadges(){if(typeof Game==='undefined'||typeof Game.worldToScree
       } else if(state.floorPlanDisabled){
         p.style.width='min(920px,calc(100vw - 40px))';
       } else {
-        p.style.width='620px';
+        p.style.width=state.data&&Array.isArray(state.data.buyers)&&state.data.buyers.length?'min(1180px,calc(100vw - 24px))':'620px';
       }
     });
   }
