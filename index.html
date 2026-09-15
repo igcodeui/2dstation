@@ -4175,6 +4175,11 @@ const UI = (() => {
           <option value="0.5">0.5x</option><option value="1" selected>1x</option><option value="2">2x</option>
         </select></div>
       </div>
+      <div class="set-sub">DISPLAY</div>
+      <div class="set-row">
+        <div>Disable Floor Plan<span class="hint">Hide the 2D office and center the Live Performance Center for the TV</span></div>
+        <div class="set-ctl"><label class="switch"><input type="checkbox" id="setFloorPlanDisabled"><em></em></label></div>
+      </div>
       <div class="set-sub">OFFICE SCHEDULE</div>
       <div class="set-row">
         <div>Global coffee break<span class="hint">Default coffee time for everyone without a more specific one</span></div>
@@ -4220,6 +4225,11 @@ const UI = (() => {
         </div>
       </div>`;
     $('setLive').addEventListener('change', (e) => { Game.setPaused(!e.target.checked); });
+    $('setFloorPlanDisabled').addEventListener('change', (e) => {
+      if (window.APCOfficeSync && typeof window.APCOfficeSync.setFloorPlanDisabled === 'function') {
+        window.APCOfficeSync.setFloorPlanDisabled(e.target.checked);
+      }
+    });
     $('setNames').addEventListener('change', (e) => { Game.state.namesOn = e.target.checked; $('btnNames').classList.toggle('active', e.target.checked); });
     $('setCoffee').addEventListener('change', (e) => { Game.state.coffeeOn = e.target.checked; $('btnCoffee').classList.toggle('active', e.target.checked); });
     $('setNight').addEventListener('change', (e) => { if (e.target.checked !== Game.state.night) Game.toggleNight(); });
@@ -4443,6 +4453,7 @@ const UI = (() => {
   function syncSettings() {
     if (!$('setLive')) return;
     $('setLive').checked = !Game.state.paused;
+    $('setFloorPlanDisabled').checked = localStorage.getItem('apcFloorPlanDisabled') === '1';
     $('setNames').checked = Game.state.namesOn;
     $('setCoffee').checked = Game.state.coffeeOn;
     $('setNight').checked = Game.state.night;
