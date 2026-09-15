@@ -109,8 +109,9 @@
 
       a.syncAbsent = source==='apc' && a.syncStatus==='ABSENT';
       if(a.syncStatus==='ABSENT'){
-        a.visible=true; a.alpha=1; a.fading=0; a.path=null; a.lerp=null;
-        a.sitting=true; a.state='OFFLINE'; a.tState=999999; a.decideT=999999; a.bubbleT=0; a.bubbleMsg=null;
+        // Absent from the performance tracker means the character is NOT on the floor.
+        a.visible=false; a.alpha=0; a.fading=0; a.path=null; a.lerp=null;
+        a.sitting=false; a.state='OFFLINE'; a.tState=999999; a.decideT=999999; a.bubbleT=0; a.bubbleMsg=null;
       }else{
         a.visible=true; a.alpha=1; a.fading=0;
         a.path=null; a.lerp=null; a.sitting=true; a.state='WORKING'; a.facing=a.seat.facing;
@@ -187,7 +188,8 @@
         a.decideT=999999; a.tState=999999;
         a.syncAbsent = !rr && status==='ABSENT';
         if(status==='ABSENT'){
-          a.visible=true;a.alpha=1;a.sitting=true;a.state='OFFLINE';a.tState=999999;a.decideT=999999;a.bubbleT=0;a.bubbleMsg=null;
+          // Absent employees stay off the floor; the red ABSENT status remains in the leaderboard.
+          a.visible=false;a.alpha=0;a.sitting=false;a.state='OFFLINE';a.tState=999999;a.decideT=999999;a.bubbleT=0;a.bubbleMsg=null;
         }else{
           a.visible=true;a.alpha=1;a.fading=0;a.path=null;a.lerp=null;a.sitting=true;a.state='WORKING';a.facing=a.seat.facing;
         }
