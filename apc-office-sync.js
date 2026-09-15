@@ -107,9 +107,10 @@
       a.decideT=999999;
       a.tState=999999;
 
+      a.syncAbsent = source==='apc' && a.syncStatus==='ABSENT';
       if(a.syncStatus==='ABSENT'){
-        a.visible=false; a.alpha=0; a.fading=0; a.path=null; a.lerp=null;
-        a.sitting=false; a.state='OFFLINE'; a.bubbleT=0; a.bubbleMsg=null;
+        a.visible=true; a.alpha=1; a.fading=0; a.path=null; a.lerp=null;
+        a.sitting=true; a.state='OFFLINE'; a.tState=999999; a.decideT=999999; a.bubbleT=0; a.bubbleMsg=null;
       }else{
         a.visible=true; a.alpha=1; a.fading=0;
         a.path=null; a.lerp=null; a.sitting=true; a.state='WORKING'; a.facing=a.seat.facing;
@@ -163,8 +164,9 @@
           ssdi:Number(row.ssdi||0),debt:Number(row.debt||0),tax:Number(row.tax||0),finalExpense:Number(row.finalExpense||0)
         }:null;
         a.decideT=999999; a.tState=999999;
+        a.syncAbsent = !rr && status==='ABSENT';
         if(status==='ABSENT'){
-          a.visible=false;a.alpha=0;a.sitting=false;a.state='OFFLINE';a.bubbleT=0;a.bubbleMsg=null;
+          a.visible=true;a.alpha=1;a.sitting=true;a.state='OFFLINE';a.tState=999999;a.decideT=999999;a.bubbleT=0;a.bubbleMsg=null;
         }else{
           a.visible=true;a.alpha=1;a.fading=0;a.path=null;a.lerp=null;a.sitting=true;a.state='WORKING';a.facing=a.seat.facing;
         }
