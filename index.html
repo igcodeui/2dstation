@@ -3007,7 +3007,11 @@ const Agents = (() => {
       const d = MapData.desks.find(x => x.id === def.desk);
       return { x: d.seatPx.x, y: d.seatPx.y, facing: d.seatPx.facing, approach: d.seat.approach, kind: 'office', c: d.seat.c, r: d.seat.r };
     }
-    const s = MapData.islandSeats[def.seatIdx];
+    // Resolve island seating by the workstation's PC id, not by array index.
+    // This prevents a character (e.g. JD/PC-14) from inheriting another
+    // workstation's seat when the roster order changes.
+    const s = MapData.islandSeats.find(x => x.pc === def.key);
+    if (!s) throw new Error('No island seat found for ' + def.key);
     return { x: s.c * TS + 8, y: s.r * TS + 14, facing: s.facing, approach: s.approach, kind: 'office', c: s.c, r: s.r };
   }
 
