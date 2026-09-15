@@ -22,8 +22,8 @@
     if(document.getElementById('apc-live-style'))return;
     const style=document.createElement('style'); style.id='apc-live-style';
     style.textContent=`
-      #apcLivePanel{position:absolute;right:14px;top:14px;z-index:28;width:500px;max-width:calc(100vw - 28px);max-height:calc(100% - 28px);background:rgba(13,16,24,.95);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;backdrop-filter:blur(6px);overflow:hidden}
-      #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:6px;padding:10px 14px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
+      #apcLivePanel{position:absolute;right:14px;top:14px;z-index:28;width:720px;max-width:calc(100vw - 28px);max-height:calc(100% - 28px);background:rgba(13,16,24,.95);border:1px solid #333c4d;border-radius:12px;box-shadow:0 14px 36px rgba(0,0,0,.48);color:#e8ecf3;font-family:"Segoe UI",system-ui,sans-serif;backdrop-filter:blur(6px);overflow:hidden}
+      #apcLivePanel .apc-head{display:flex;align-items:center;justify-content:space-between;padding:20px 22px 16px;border-bottom:1px solid #262d3a}\n      #apcLivePanel .apc-tabs{display:flex;gap:8px;padding:12px 16px;border-bottom:1px solid #262d3a;background:rgba(255,255,255,.015)}
       #apcLivePanel .apc-schedule-btn{margin:0 14px 10px;width:calc(100% - 28px);border:1px solid #333c4d;background:#151a23;color:#dce7f5;border-radius:7px;padding:8px 10px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.8px;cursor:pointer}
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
       #apcLivePanel .apc-st.wfh{color:#60a5fa}
@@ -36,28 +36,28 @@
       #apcOfficeSchedule .hint{font-size:11px;color:#94a3b8;margin-bottom:12px}
       #apcOfficeSchedule table{width:100%;border-collapse:collapse}
       #apcOfficeSchedule th,#apcOfficeSchedule td{padding:8px 6px;border-bottom:1px solid #252e3b;font-size:11px;text-align:center}
-      #apcOfficeSchedule th{color:#dce7f5;font-size:10px;letter-spacing:.8px}
+      #apcOfficeSchedule th{color:#dce7f5;font-size:12px;letter-spacing:.8px}
       #apcOfficeSchedule td.name{text-align:left;font-weight:800;color:#fff}
       #apcOfficeSchedule input,#apcOfficeSchedule select{background:#0d131b;color:#fff;border:1px solid #313c4d;border-radius:6px;padding:6px 7px;font:600 11px "Segoe UI",system-ui,sans-serif}
       #apcOfficeSchedule .foot{padding:12px 18px;border-top:1px solid #2a3340;display:flex;justify-content:flex-end;gap:8px}
       #apcOfficeSchedule button{border:1px solid #394455;background:#18212d;color:#dce7f5;border-radius:7px;padding:8px 12px;font:800 10px "Segoe UI",system-ui,sans-serif;cursor:pointer}
-      #apcOfficeSchedule button.primary{background:#1f4f88;border-color:#4b94ed;color:#fff}\n      #apcLivePanel .apc-tab{flex:1;border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:8px 6px;font:800 9px/1.1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-tab:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-tab.on{color:#fff;border-color:#5b9cff;background:rgba(91,156,255,.16);box-shadow:inset 0 0 0 1px rgba(91,156,255,.18)}
-      #apcLivePanel .apc-title{font-size:18px;font-weight:900;letter-spacing:2px;color:#5b9cff}
+      #apcOfficeSchedule button.primary{background:#1f4f88;border-color:#4b94ed;color:#fff}\n      #apcLivePanel .apc-tab{flex:1;border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:10px 8px;font:900 11px/1.1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-tab:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-tab.on{color:#fff;border-color:#5b9cff;background:rgba(91,156,255,.16);box-shadow:inset 0 0 0 1px rgba(91,156,255,.18)}
+      #apcLivePanel .apc-title{font-size:24px;font-weight:900;letter-spacing:2px;color:#5b9cff}
       #apcLivePanel .apc-tools{display:flex;align-items:center;gap:8px}\n      #apcLivePanel .apc-toggle{border:1px solid #333c4d;background:#151a23;color:#8b94a7;border-radius:7px;padding:5px 8px;font:800 10px/1 "Segoe UI",system-ui,sans-serif;letter-spacing:.7px;cursor:pointer}\n      #apcLivePanel .apc-toggle:hover{color:#e8ecf3;border-color:#5b9cff}\n      #apcLivePanel .apc-toggle.on{color:#5b9cff;border-color:rgba(91,156,255,.55);background:rgba(91,156,255,.12)}\n      #apcLivePanel .apc-sync{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;letter-spacing:1px;color:#8b94a7}
       #apcLivePanel .apc-dot{width:10px;height:10px;border-radius:50%;background:#4cd964;box-shadow:0 0 7px rgba(76,217,100,.55)}
       #apcLivePanel.offline .apc-dot{background:#ffb340;box-shadow:none}
-      #apcLivePanel .apc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:12px 14px}
+      #apcLivePanel .apc-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:16px 18px}
       #apcLivePanel .apc-kpi{background:#151a23;border:1px solid #262d3a;border-radius:10px;padding:12px 8px;text-align:center}
-      #apcLivePanel .apc-kpi b{display:block;font-size:28px;line-height:1.05}
-      #apcLivePanel .apc-kpi span{display:block;margin-top:5px;color:#8b94a7;font-size:11px;font-weight:800;letter-spacing:1px}
+      #apcLivePanel .apc-kpi b{display:block;font-size:34px;line-height:1.05}
+      #apcLivePanel .apc-kpi span{display:block;margin-top:6px;color:#8b94a7;font-size:13px;font-weight:800;letter-spacing:1px}
       #apcLivePanel .apc-date{padding:2px 14px 10px;color:#8b94a7;font-size:11px;font-weight:800;letter-spacing:.8px}
       #apcLivePanel .apc-list{padding:0 12px 14px;max-height:560px;overflow:auto}
-      #apcLivePanel .apc-row{display:grid;grid-template-columns:46px 1fr 68px 82px;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid rgba(255,255,255,.045)}
-      #apcLivePanel .apc-row:first-child{border-top:0}.apc-rank{font-size:18px;font-weight:900;text-align:center;color:#8b94a7}.apc-row.top .apc-rank{color:#ffcf5a}.apc-row.rank1{background:linear-gradient(90deg,rgba(255,207,90,.16),rgba(255,207,90,.06));border-left:4px solid #ffcf5a}.apc-row.rank2{background:linear-gradient(90deg,rgba(205,214,223,.13),rgba(205,214,223,.04));border-left:4px solid #cbd5e1}.apc-row.rank3{background:linear-gradient(90deg,rgba(205,130,76,.13),rgba(205,130,76,.04));border-left:4px solid #cd824c}.apc-row.rank1 .apc-rank{color:#ffcf5a}.apc-row.rank2 .apc-rank{color:#d8e0e8}.apc-row.rank3 .apc-rank{color:#e09a68}
-      #apcLivePanel .apc-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:900}
-      #apcLivePanel .apc-st{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;font-weight:800;letter-spacing:.7px;color:#8b94a7}#apcLivePanel .apc-st.abs{color:#ff5a5f}
+      #apcLivePanel .apc-row{display:grid;grid-template-columns:58px 1fr 90px 108px;align-items:center;gap:12px;padding:15px 10px;border-top:1px solid rgba(255,255,255,.045)}
+      #apcLivePanel .apc-row:first-child{border-top:0}.apc-rank{font-size:24px;font-weight:900;text-align:center;color:#8b94a7}.apc-row.top .apc-rank{color:#ffcf5a}.apc-row.rank1{background:linear-gradient(90deg,rgba(255,207,90,.16),rgba(255,207,90,.06));border-left:4px solid #ffcf5a}.apc-row.rank2{background:linear-gradient(90deg,rgba(205,214,223,.13),rgba(205,214,223,.04));border-left:4px solid #cbd5e1}.apc-row.rank3{background:linear-gradient(90deg,rgba(205,130,76,.13),rgba(205,130,76,.04));border-left:4px solid #cd824c}.apc-row.rank1 .apc-rank{color:#ffcf5a}.apc-row.rank2 .apc-rank{color:#d8e0e8}.apc-row.rank3 .apc-rank{color:#e09a68}
+      #apcLivePanel .apc-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:21px;font-weight:900}
+      #apcLivePanel .apc-st{display:flex;align-items:center;gap:4px;margin-top:5px;font-size:13px;font-weight:800;letter-spacing:.7px;color:#8b94a7}#apcLivePanel .apc-st.abs{color:#ff5a5f}
       #apcLivePanel .apc-st i{width:8px;height:8px;border-radius:50%;display:inline-block;background:#4cd964}.apc-st.abs i{background:#ff5a5f}
-      #apcLivePanel .apc-num{text-align:right;font-size:14px;font-weight:900}.apc-num small{display:block;color:#8b94a7;font-size:10px}
+      #apcLivePanel .apc-num{text-align:right;font-size:18px;font-weight:900}.apc-num small{display:block;color:#8b94a7;font-size:12px}
       .apc-agent-badge{position:absolute;z-index:27;pointer-events:none;transform:translate(-50%,-100%);min-width:150px;padding:7px 9px 8px;border-radius:6px;border:1px solid rgba(91,156,255,.45);background:rgba(13,16,24,.92);color:#e8ecf3;text-align:center;box-shadow:0 5px 12px rgba(0,0,0,.35);font-family:"Segoe UI",system-ui,sans-serif;transition:left .08s linear,top .08s linear}
       .apc-agent-badge .r{font-size:13px;font-weight:900;color:#5b9cff;letter-spacing:.5px}.apc-agent-badge .v{margin-top:3px;font-size:11px;font-weight:800;color:#8b94a7;white-space:nowrap}
       .apc-agent-badge.top{border-color:rgba(255,207,90,.78);box-shadow:0 0 14px rgba(255,207,90,.18),0 5px 12px rgba(0,0,0,.35)}.apc-agent-badge.top .r{color:#ffcf5a}.apc-agent-badge.abs{opacity:.6;border-color:rgba(123,132,148,.45)}
