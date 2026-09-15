@@ -1,0 +1,123 @@
+name: Fix Floor Plan Toggle
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch-floor-toggle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Patch live leaderboard toggle
+        shell: python
+        run: |
+          from pathlib import Path
+          p = Path('apc-office-sync.js')
+          s = p.read_text(encoding='utf-8')
+          original = s
+
+          old = '<div class="apc-tools"><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync">'
+          new = '<div class="apc-tools"><button id="apcFloorPlanToggle" class="apc-toggle">HIDE FLOOR PLAN</button><button id="apcToggleBadges" class="apc-toggle">SHOW LABELS</button><div class="apc-sync">'
+          if 'id="apcFloorPlanToggle"' not in s:
+              if old not in s:
+                  raise SystemExit('leaderboard header marker not found')
+              s = s.replace(old, new, 1)
+
+          if 'function setFloorPlanHidden' not in s:
+              marker = '\n})();'
+              if marker not in s:
+                  raise SystemExit('IIFE close marker not found')
+              code = r'''
+
+  /* FLOOR PLAN TOGGLE — TV presentation mode */
+  function setFloorPlanHidden(hidden){
+    document.body.classList.toggle('apc-floor-hidden', !!hidden);
+    const canvas = document.getElementById('world');
+    const vignette = document.getElementById('stageVignette');
+    const info = document.getElementById('infoPanel');
+    const tooltip = document.getElementById('tooltip');
+    if (canvas) { canvas.style.visibility = hidden ? 'hidden' : ''; canvas.style.pointerEvents = hidden ? 'none' : ''; }
+    if (vignette) vignette.style.visibility = hidden ? 'hidden' : '';
+    if (info) info.style.visibility = hidden ? 'hidden' : '';
+    if (tooltip) tooltip.style.visibility = hidden ? 'hidden' : '';
+    const btn = document.getElementById('apcFloorPlanToggle');
+    if (btn) {
+      btn.textContent = hidden ? 'SHOW FLOOR PLAN' : 'HIDE FLOOR PLAN';
+      btn.classList.toggle('on', !!hidden);
+    }
+  }
+
+  function wireFloorPlanToggle(){
+    const btn = document.getElementById('apcFloorPlanToggle');
+    if (!btn || btn.dataset.wired) return;
+    btn.dataset.wired = '1';
+    btn.addEventListener('click', function(){
+      setFloorPlanHidden(!document.body.classList.contains('apc-floor-hidden'));
+    });
+  }
+
+  function installFloorPlanToggleStyles(){
+    if (document.getElementById('apc-floor-toggle-style')) return;
+    const st = document.createElement('style');
+    st.id = 'apc-floor-toggle-style';
+    st.textContent = `
+      body.apc-floor-hidden #stage { background:#080b11 !important; }
+      body.apc-floor-hidden #world,
+      body.apc-floor-hidden #stageVignette,
+      body.apc-floor-hidden #infoPanel,
+      body.apc-floor-hidden #tooltip { visibility:hidden !important; pointer-events:none !important; }
+      body.apc-floor-hidden #apcLivePanel {
+        position:fixed !important;
+        left:50% !important;
+        top:50% !important;
+        right:auto !important;
+        transform:translate(-50%,-50%) !important;
+        width:min(920px,calc(100vw - 40px)) !important;
+        max-width:calc(100vw - 40px) !important;
+        max-height:calc(100vh - 110px) !important;
+        z-index:999 !important;
+      }
+      body.apc-floor-hidden #apcLivePanel .apc-list { max-height:calc(100vh - 450px) !important; }
+      body.apc-floor-hidden #apcLivePanel .apc-title { font-size:28px !important; }
+      body.apc-floor-hidden #apcLivePanel .apc-name { font-size:24px !important; }
+      body.apc-floor-hidden #apcLivePanel .apc-rank { font-size:28px !important; }
+      body.apc-floor-hidden #apcLivePanel .apc-num { font-size:20px !important; }
+      body.apc-floor-hidden #apcLivePanel .apc-st { font-size:14px !important; }
+      body.apc-floor-hidden #apcLivePanel .apc-kpi b { font-size:40px !important; }
+      #apcFloorPlanToggle { min-width:145px; }
+    `;
+    document.head.appendChild(st);
+  }
+
+  function bootFloorPlanToggle(){
+    installFloorPlanToggleStyles();
+    wireFloorPlanToggle();
+    const obs = new MutationObserver(function(){ wireFloorPlanToggle(); });
+    obs.observe(document.body,{childList:true,subtree:true});
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',bootFloorPlanToggle,{once:true});
+  else bootFloorPlanToggle();
+'''
+              s = s[:s.rfind(marker)] + code + s[s.rfind(marker):]
+
+          if s == original:
+              print('No changes needed.')
+          else:
+              p.write_text(s, encoding='utf-8')
+              print('Floor plan toggle patched into apc-office-sync.js.')
+      - name: Commit
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apc-office-sync.js
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m "Fix live floor plan hide show toggle"
+          git push
