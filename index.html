@@ -4745,16 +4745,9 @@ const Game = (() => {
       ctx.drawImage(img, spriteX, spriteY, spriteW, spriteH);
     }
 
-    // Attendance feed: an agent marked ABSENT by the Agent Performance
-    // tracker stays visible at the workstation but is tinted red.
-    if (a.syncAbsent) {
-      ctx.save();
-      ctx.globalCompositeOperation = 'source-atop';
-      ctx.fillStyle = 'rgba(220,45,55,0.62)';
-      ctx.fillRect(spriteX, spriteY, spriteW, spriteH);
-      ctx.restore();
-    }
-
+    // Attendance is represented by the status indicator/leaderboard.
+    // The character itself keeps its normal appearance.
+    
     // chair back overlay for office chairs (sitters facing away from camera)
     if (a.sitting && a.seat && a.seat.kind === 'office') {
       const c = a.seat.c, r = a.seat.r;
