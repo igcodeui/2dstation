@@ -28,7 +28,7 @@
       #apcLivePanel .apc-schedule-btn:hover{border-color:#5b9cff;color:#fff}
       #apcLivePanel.has-buyers{width:980px!important;max-width:calc(100vw - 28px)!important}
       #apcLivePanel.has-buyers .apc-buyer-panel{position:absolute;right:16px;top:150px;width:330px;height:calc(100% - 170px);margin:0;display:block!important}
-      #apcLivePanel.has-buyers .apc-buyer-list{max-height:calc(100% - 38px);overflow:auto}
+      #apcLivePanel.has-buyers .apc-buyer-list{max-height:480px;overflow:auto}
       #apcLivePanel.has-buyers .apc-list{width:calc(100% - 360px);max-height:680px}
       #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 360px)}
       #apcLivePanel.has-buyers .apc-date{width:calc(100% - 360px)}
@@ -397,6 +397,44 @@ function updateHeader(){
     if(cd&&d)cd.textContent=d;
   }
 
+    function parseHHTime_(s){
+      const m=String(s||'').match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+      if(!m)return null;
+      let h=Number(m[1]), min=Number(m[2]); const ap=m[3].toUpperCase();
+      if(ap==='AM'&&h===12)h=0;
+      if(ap==='PM'&&h!==12)h+=12;
+      return h*60+min;
+    }
+    function buyerLiveFromHours_(hours){
+      const text=String(hours||'').toUpperCase().replace(/\s+/g,' ').trim();
+      if(!text)return {live:false,message:'No schedule'};
+      if(/24\s*\/\s*7|24\s*HOURS/.test(text))return {live:true,message:'Open 24/7'};
+      const now=new Date();
+      const day=new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',weekday:'short'}).format(now).toUpperCase().slice(0,3);
+      const mins=Number(new Intl.DateTimeFormat('en-US',{timeZone:'America/Los_Angeles',hour:'2-digit',minute:'2-digit',hour12:false}).format(now).replace(':',''));
+      const currentMin=Math.floor(mins/100)*60+(mins%100);
+      const parts=text.split(/\s*,\s*/);
+      for(const part of parts){
+        const ranges=[...part.matchAll(/(\d{1,2}:\d{2}\s*(?:AM|PM))\s*[-–]\s*(\d{1,2}:\d{2}\s*(?:AM|PM))/g)];
+        if(!ranges.length)continue;
+        const prefix=part.slice(0,ranges[0].index);
+        let days=[];
+        if(/MON\s*[-–]\s*THURS?/.test(prefix)||/MON\s*[-–]\s*THU/.test(prefix)) days=['MON','TUE','WED','THU'];
+        else if(/MON\s*[-–]\s*FRI|M\s*[-–]\s*F/.test(prefix)) days=['MON','TUE','WED','THU','FRI'];
+        else {
+          const map=[['MON',/MONDAY|MON/],['TUE',/TUESDAY|TUE/],['WED',/WEDNESDAY|WED/],['THU',/THURSDAY|THURS|THU/],['FRI',/FRIDAY|FRI/],['SAT',/SATURDAY|SAT/],['SUN',/SUNDAY|SUN/]];
+          days=map.filter(x=>x[1].test(prefix)).map(x=>x[0]);
+        }
+        if(!days.length)days=['MON','TUE','WED','THU','FRI'];
+        if(!days.includes(day))continue;
+        const open=parseHHTime_(ranges[0][1]), close=parseHHTime_(ranges[0][2]);
+        if(open==null||close==null)continue;
+        const live=close>=open ? (currentMin>=open&&currentMin<=close) : (currentMin>=open||currentMin<=close);
+        if(live)return {live:true,message:'Open until '+ranges[0][2]};
+      }
+      return {live:false,message:'Closed'};
+    }
+
     function renderHelpingHandsBuyers(){
     const panel=document.getElementById('apcBuyerPanel');
     if(!panel)return;
@@ -405,9 +443,11 @@ function updateHeader(){
     if(!buyers.length){panel.style.display='none';return;}
     panel.style.display='';
     const rows=buyers.map(b=>{
-      const live=String(b.status||'').toUpperCase()==='LIVE' || b.live===true || String(b.availability||'').toUpperCase()==='LIVE';
+      const calc=buyerLiveFromHours_(b.hours||'');
+      const live=calc.live;
       const status=live?'LIVE':'CLOSED';
-      return '<div class="apc-buyer-row"><div><div class="apc-buyer-name">'+esc(b.name||b.buyer||'')+'</div><div class="apc-buyer-vertical">'+esc(b.vertical||'')+'</div></div><div class="apc-buyer-vertical">'+esc(b.hours||'')+'</div><div class="apc-buyer-status '+(live?'live':'closed')+'">● '+status+'</div></div>';
+      const msg=calc.message || b.message || '';
+      return '<div class="apc-buyer-row"><div><div class="apc-buyer-name">'+esc(b.name||b.buyer||'')+'</div><div class="apc-buyer-vertical">'+esc(b.vertical||'')+'</div></div><div class="apc-buyer-vertical">'+esc(b.hours||'')+'<div style="font-size:10px;margin-top:2px;color:#6f7b8e">'+esc(msg)+'</div></div><div class="apc-buyer-status '+(live?'live':'closed')+'">● '+status+'</div></div>';
     }).join('');
     panel.innerHTML='<div class="apc-buyer-hd">AVAILABLE BUYERS · PACIFIC TIME</div><div class="apc-buyer-list">'+(rows||'<div class="apc-buyer-empty">No buyer availability data</div>')+'</div>';
   }
