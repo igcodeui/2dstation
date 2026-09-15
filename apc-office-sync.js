@@ -33,7 +33,7 @@
       #apcLivePanel.has-buyers .apc-buyer-name{font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
       #apcLivePanel.has-buyers .apc-buyer-vertical{font-size:13px}
       #apcLivePanel.has-buyers .apc-buyer-status{font-size:15px}
-      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:16px;padding:12px 14px}
+      #apcLivePanel.has-buyers .apc-buyer-hd{font-size:16px;padding:16px 18px}
       #apcLivePanel.has-buyers .apc-list{width:calc(100% - 440px);max-height:680px}
       #apcLivePanel.has-buyers .apc-schedule-btn{width:calc(100% - 440px)}
       #apcLivePanel.has-buyers .apc-date{width:calc(100% - 440px)}
