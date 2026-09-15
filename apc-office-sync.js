@@ -35,8 +35,8 @@
       #apcLivePanel .apc-row{display:grid;grid-template-columns:46px 1fr 68px 82px;align-items:center;gap:10px;padding:12px 8px;border-top:1px solid rgba(255,255,255,.045)}
       #apcLivePanel .apc-row:first-child{border-top:0}.apc-rank{font-size:18px;font-weight:900;text-align:center;color:#8b94a7}.apc-row.top .apc-rank{color:#ffcf5a}
       #apcLivePanel .apc-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:16px;font-weight:900}
-      #apcLivePanel .apc-st{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;font-weight:800;letter-spacing:.7px;color:#8b94a7}
-      #apcLivePanel .apc-st i{width:8px;height:8px;border-radius:50%;display:inline-block;background:#4cd964}.apc-st.abs i{background:#7b8494}
+      #apcLivePanel .apc-st{display:flex;align-items:center;gap:4px;margin-top:4px;font-size:11px;font-weight:800;letter-spacing:.7px;color:#8b94a7}#apcLivePanel .apc-st.abs{color:#ff5a5f}
+      #apcLivePanel .apc-st i{width:8px;height:8px;border-radius:50%;display:inline-block;background:#4cd964}.apc-st.abs i{background:#ff5a5f}
       #apcLivePanel .apc-num{text-align:right;font-size:14px;font-weight:900}.apc-num small{display:block;color:#8b94a7;font-size:10px}
       .apc-agent-badge{position:absolute;z-index:27;pointer-events:none;transform:translate(-50%,-100%);min-width:150px;padding:7px 9px 8px;border-radius:6px;border:1px solid rgba(91,156,255,.45);background:rgba(13,16,24,.92);color:#e8ecf3;text-align:center;box-shadow:0 5px 12px rgba(0,0,0,.35);font-family:"Segoe UI",system-ui,sans-serif;transition:left .08s linear,top .08s linear}
       .apc-agent-badge .r{font-size:13px;font-weight:900;color:#5b9cff;letter-spacing:.5px}.apc-agent-badge .v{margin-top:3px;font-size:11px;font-weight:800;color:#8b94a7;white-space:nowrap}
@@ -126,11 +126,32 @@
     });
   }
 
+  function calculateRRPerformanceRows(){
+    if(!state.rrData || !Array.isArray(state.rrData.agents)) return [];
+    const rows=state.rrData.agents.map(r=>Object.assign({},r));
+    const maxSsdi=Math.max(1,...rows.map(r=>Number(r.ssdi||0)));
+    const maxTax=Math.max(1,...rows.map(r=>Number(r.tax||0)));
+    const maxDebt=Math.max(1,...rows.map(r=>Number(r.debt||0)));
+    const maxFe=Math.max(1,...rows.map(r=>Number(r.finalExpense||0)));
+    rows.forEach(r=>{
+      const attendance=String(r.status||r.attendance||'').toUpperCase()==='ABSENT'?0:1;
+      const ssdi=(Number(r.ssdi||0)/maxSsdi)*0.35;
+      const tax=(Number(r.tax||0)/maxTax)*0.17;
+      const debt=(Number(r.debt||0)/maxDebt)*0.17;
+      const fe=(Number(r.finalExpense||0)/maxFe)*0.01;
+      const att=attendance*0.30;
+      r.performanceScore=att+ssdi+tax+debt+fe;
+    });
+    rows.sort((a,b)=>b.performanceScore-a.performanceScore || Number(b.total||0)-Number(a.total||0) || String(a.name).localeCompare(String(b.name)));
+    rows.forEach((r,i)=>r.performanceRank=i+1);
+    return rows;
+  }
+
   function getDisplayRows(source){
-    if(source==='rr') return state.rrData ? state.rrData.agents.slice() : [];
+    if(source==='rr') return calculateRRPerformanceRows();
     if(source==='apc') return state.data ? state.data.agents.slice() : [];
     const apcRows=(state.data&&state.data.agents||[]).map(r=>Object.assign({_source:'apc'},r));
-    const rrRows=(state.rrData&&state.rrData.agents||[]).map(r=>Object.assign({_source:'rr'},r));
+    const rrRows=calculateRRPerformanceRows().map(r=>Object.assign({_source:'rr'},r));
     return apcRows.concat(rrRows).sort((a,b)=>{
       const ar=Number(a.rank||999), br=Number(b.rank||999);
       if(a._source!==b._source) return a._source==='apc'?-1:1;
@@ -223,14 +244,14 @@ function updateHeader(){
     list.innerHTML=rows.map(row=>{
       const rr=row._source==='rr' || state.source==='rr';
       const abs=String(row.status||'').toUpperCase()==='ABSENT';
-      const rank=Number(row.rank||row.buyerRank||0);
+      const rank=Number(rr?row.performanceRank:row.rank||row.buyerRank||0);
       const score=rr?'':(' · '+pct(row.overallScore));
       const sub=rr
         ? (' '+(abs?'ABSENT':'ACTIVE')+' · SSDI '+money(row.ssdi||0)+' · Debt '+money(row.debt||0)+' · Tax '+money(row.tax||0)+' · FE '+money(row.finalExpense||0))
         : (' '+(abs?'ABSENT':'PRESENT')+score);
       const tr=rr?Number(row.total||0):Number(row.todayTransfers||0);
       const rev=rr?null:Number(row.todayRevenue||0);
-      return '<div class="apc-row '+(rank===1?'top':'')+'"><div class="apc-rank">#'+esc(rank||'—')+'</div><div><div class="apc-name">'+esc(row.name)+'</div><div class="apc-st"><i></i>'+esc(sub)+'</div></div><div class="apc-num">'+money(tr)+'<small>TR</small></div><div class="apc-num">'+(rev==null?'—':money(rev))+'<small>REV</small></div></div>';
+      return '<div class="apc-row '+(rank===1?'top':'')+'"><div class="apc-rank">#'+esc(rank||'—')+'</div><div><div class="apc-name">'+esc(row.name)+'</div><div class="apc-st '+(abs?'abs':'')+'"><i></i>'+esc(sub)+'</div></div><div class="apc-num">'+money(tr)+'<small>TR</small></div><div class="apc-num">'+(rev==null?'—':money(rev))+'<small>REV</small></div></div>';
     }).join('');
   }
 
@@ -241,9 +262,10 @@ function updateHeader(){
       list.forEach(({office:a,row})=>{
         const rr=a.syncSource==='rr';
         const el=document.createElement('div');
-        el.className='apc-agent-badge'+(Number(row.rank||row.buyerRank)===1?' top':'')+(String(row.status||'').toUpperCase()==='ABSENT'?' abs':'');
+        const displayRank = rr ? Number(row.performanceRank||0) : Number(row.rank||row.buyerRank||0);
+        el.className='apc-agent-badge'+(displayRank===1?' top':'')+(String(row.status||'').toUpperCase()==='ABSENT'?' abs':'');
         el.dataset.pc=a.pc;
-        el.innerHTML='<div class="r">'+esc('#'+(row.rank||row.buyerRank||'—')+' · '+row.name)+'</div><div class="v">'+money(rr?row.total:row.todayTransfers)+' TRANSFERS'+(rr?'':' · '+money(row.todayRevenue)+' REV')+'</div>';
+        el.innerHTML='<div class="r">'+esc('#'+(displayRank||'—')+' · '+row.name)+'</div><div class="v">'+money(rr?row.total:row.todayTransfers)+' TRANSFERS'+(rr?'':' · '+money(row.todayRevenue)+' REV')+'</div>';
         stage.appendChild(el);
       });
     };
