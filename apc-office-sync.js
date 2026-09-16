@@ -122,6 +122,66 @@
       document.head.appendChild(tvStyle);
     }
   }
+  function parseHHTime_(s){
+    const m=String(s||'').trim().match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+    if(!m)return null;
+    let h=Number(m[1]), min=Number(m[2]);
+    if(m[3].toUpperCase()==='AM'&&h===12)h=0;
+    if(m[3].toUpperCase()==='PM'&&h!==12)h+=12;
+    return h*60+min;
+  }
+
+  function getHHBuyerLiveStatus_(hours){
+    const raw=String(hours||'').toUpperCase().replace(/[–—−]/g,'-').replace(/\bPST\b/g,'').replace(/\s+/g,' ').trim();
+    if(!raw)return {live:false,message:'No schedule'};
+    if(/24\s*\/\s*7|24\s*HOURS/.test(raw))return {live:true,message:'Open 24/7'};
+
+    const parts=new Intl.DateTimeFormat('en-US',{
+      timeZone:'America/Los_Angeles',
+      weekday:'short',
+      hour:'2-digit',
+      minute:'2-digit',
+      hour12:false
+    }).formatToParts(new Date());
+    const get=t=>(parts.find(p=>p.type===t)||{}).value||'';
+    const day=get('weekday').toUpperCase().slice(0,3);
+    const currentMin=Number(get('hour'))*60+Number(get('minute'));
+    const order=['MON','TUE','WED','THU','FRI','SAT','SUN'];
+
+    for(const segment of raw.split(/\s*[,;]\s*/)){
+      const m=segment.match(/(\d{1,2}:\d{2}\s*(?:AM|PM))\s*-\s*(\d{1,2}:\d{2}\s*(?:AM|PM))/);
+      if(!m)continue;
+      const prefix=segment.slice(0,m.index).trim();
+
+      let days=[];
+      const range=prefix.match(/\b(MON(?:DAY)?)\s*-\s*(THU(?:RSDAY|RS)?|FRI(?:DAY)?)\b/);
+      if(range){
+        const from=range[1].slice(0,3).toUpperCase();
+        const to=range[2].slice(0,3).toUpperCase();
+        const a=order.indexOf(from), b=order.indexOf(to);
+        if(a>=0&&b>=a)days=order.slice(a,b+1);
+      } else {
+        const patterns=[
+          ['MON',/\bMON(?:DAY)?\b/],['TUE',/\bTUE(?:SDAY)?\b/],['WED',/\bWED(?:NESDAY)?\b/],
+          ['THU',/\bTHU(?:RSDAY|RS)?\b/],['FRI',/\bFRI(?:DAY)?\b/],['SAT',/\bSAT(?:URDAY)?\b/],['SUN',/\bSUN(?:DAY)?\b/]
+        ];
+        days=patterns.filter(x=>x[1].test(prefix)).map(x=>x[0]);
+      }
+
+      if(!days.length)days=['MON','TUE','WED','THU','FRI'];
+      if(!days.includes(day))continue;
+
+      const open=parseHHTime_(m[1]), close=parseHHTime_(m[2]);
+      if(open==null||close==null)continue;
+
+      const live=close>=open ? currentMin>=open&&currentMin<=close : currentMin>=open||currentMin<=close;
+      if(live)return {live:true,message:'Open until '+m[2]};
+      if(currentMin<open)return {live:false,message:'Opens at '+m[1]};
+      return {live:false,message:'Closed'};
+    }
+    return {live:false,message:'Closed today'};
+  }
+
   function ensureHHBuyerPanel(){
     if(document.getElementById('apcHHBuyers')) return;
     const stage=document.getElementById('stage'); if(!stage)return;
@@ -148,9 +208,10 @@
     }
     panel.style.display='block';
     list.innerHTML=buyers.map(b=>{
-      const live=String(b.status||'').toUpperCase()==='LIVE'||b.live===true||String(b.availability||'').toUpperCase()==='LIVE';
+      const calc=getHHBuyerLiveStatus_(b.hours||'');
+      const live=calc.live;
       const status=live?'LIVE':'CLOSED';
-      return '<div class="buyer"><div><div class="name">'+esc(b.name||'')+'</div><div class="meta">'+esc(b.vertical||'')+' · '+esc(b.hours||'')+'</div></div><div class="status '+(live?'live':'apc-hh-closed')+'">● '+status+'</div></div>';
+      return '<div class="buyer"><div><div class="name">'+esc(b.name||'')+'</div><div class="meta">'+esc(b.vertical||'')+' · '+esc(b.hours||'')+' · '+esc(calc.message||'')+'</div></div><div class="status '+(live?'live':'apc-hh-closed')+'">● '+status+'</div></div>';
     }).join('');
   }
 
